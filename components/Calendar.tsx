@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
-import { FlatList, Modal, Text, TouchableOpacity, View } from 'react-native'; // 引入 FlatList
+import { memo, useEffect, useMemo, useRef, useState } from 'react';
+import { FlatList, Modal, Text, TouchableOpacity, View } from 'react-native';
 
-const Calendar = () => {
+const Calendar = memo(() => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
@@ -11,14 +11,27 @@ const Calendar = () => {
   const [pickerMonth, setPickerMonth] = useState<number>(
     currentDate.getMonth(),
   );
+
   const yearListRef = useRef<FlatList<number> | null>(null);
   const monthListRef = useRef<FlatList<string> | null>(null);
 
-  const weekDays = ['日', '一', '二', '三', '四', '五', '六'];
-  const today = new Date().toLocaleDateString('zh-CN');
-  const months = Array.from({ length: 12 }, (_, i) => (i + 1).toString());
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 101 }, (_, i) => currentYear - 50 + i);
+  const weekDays = useMemo<string[]>(
+    () => ['日', '一', '二', '三', '四', '五', '六'],
+    [],
+  );
+  const today = useMemo<string>(
+    () => new Date().toLocaleDateString('zh-CN'),
+    [],
+  );
+  const months = useMemo<string[]>(
+    () => Array.from({ length: 12 }, (_, i) => (i + 1).toString()),
+    [],
+  );
+  const currentYear = useMemo<number>(() => new Date().getFullYear(), []);
+  const years = useMemo<number[]>(
+    () => Array.from({ length: 101 }, (_, i) => currentYear - 50 + i),
+    [currentYear],
+  );
   const pickerItemHeight = 33.2;
 
   const generateMonth = (date: Date) => {
@@ -92,7 +105,7 @@ const Calendar = () => {
             animated: true,
             viewPosition: 0.5,
           });
-        }, 200);
+        }, 150);
       }
 
       if (
@@ -106,7 +119,7 @@ const Calendar = () => {
             animated: true,
             viewPosition: 0.5,
           });
-        }, 200);
+        }, 150);
       }
     }
   }, [showDatePicker, pickerYear, pickerMonth]);
@@ -119,7 +132,7 @@ const Calendar = () => {
           <Text className={'px-4 text-2xl text-themePurple-700'}>←</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={handlePickerOpen}>
-          <Text className={'text-lg font-bold text-themePurple-700'}>
+          <Text className={'text-2xl font-bold text-themePurple-700'}>
             {currentDate.toLocaleDateString('zh-CN', {
               month: 'long',
               year: 'numeric',
@@ -135,7 +148,9 @@ const Calendar = () => {
       <View className={'mb-2 flex-row justify-around'}>
         {weekDays.map((day) => (
           <View key={day} className={'w-[14.28%]'}>
-            <Text className={'w-10 text-center font-semibold text-gray-500'}>
+            <Text
+              className={'w-10 text-center text-lg font-semibold text-gray-500'}
+            >
               {day}
             </Text>
           </View>
@@ -162,8 +177,8 @@ const Calendar = () => {
               >
                 <Text
                   className={`${isToday ? 'text-white' : ''} ${
-                    isCurrentMonth ? 'text-gray-700' : 'text-gray-400'
-                  }`}
+                    isCurrentMonth ? 'text-gray-600' : 'text-gray-300'
+                  } text-lg`}
                 >
                   {date.getDate()}
                 </Text>
@@ -304,6 +319,8 @@ const Calendar = () => {
       </Modal>
     </View>
   );
-};
+});
+
+Calendar.displayName = 'Calendar';
 
 export { Calendar };
