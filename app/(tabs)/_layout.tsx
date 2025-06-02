@@ -1,45 +1,63 @@
 import { Tabs } from 'expo-router';
-import React from 'react';
-import { Platform } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
-import { HapticTab } from '@/components/HapticTab';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import TabBarBackground from '@/components/ui/TabBarBackground';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+const TabsLayout = () => {
+  const activeColor = '#A998F0';
+  const inactiveColor = '#6B7280';
+  const iconSize = 20;
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        tabBarButton: HapticTab,
-        tabBarBackground: TabBarBackground,
-        tabBarStyle: Platform.select({
-          ios: {
-            // Use a transparent background on iOS to show the blur effect
-            position: 'absolute',
-          },
-          default: {},
-        }),
-      }}>
+    <Tabs>
       <Tabs.Screen
-        name="index"
+        name="home"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: '主页',
+          headerShown: false,
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name={'home-sharp'}
+              color={focused ? activeColor : inactiveColor}
+              size={iconSize}
+            />
+          ),
+          tabBarActiveTintColor: activeColor,
+          tabBarInactiveTintColor: inactiveColor,
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="statistics"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: '统计',
+          headerShown: false,
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name={'analytics-sharp'}
+              color={focused ? activeColor : inactiveColor}
+              size={iconSize}
+            />
+          ),
+          tabBarActiveTintColor: activeColor,
+          tabBarInactiveTintColor: inactiveColor,
+        }}
+      />
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: '设置',
+          headerShown: false,
+          tabBarIcon: ({ focused }) => (
+            <Ionicons
+              name={'settings-sharp'}
+              color={focused ? activeColor : inactiveColor}
+              size={iconSize}
+            />
+          ),
+          tabBarActiveTintColor: activeColor,
+          tabBarInactiveTintColor: inactiveColor,
         }}
       />
     </Tabs>
   );
-}
+};
+
+export default TabsLayout;

@@ -1,0 +1,1764 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>周期与健康记录App - 原型 v5 (合并主页日历 + Tailwind色彩)</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+      :root {
+        --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+        /* Text Colors */
+        --text-color-dark: #374151; /* gray-700 */
+        --text-color-medium: #6B7280; /* gray-500 */
+        --text-color-light: #9CA3AF; /* gray-400 */
+
+        /* Border Colors */
+        --border-color-soft: #E5E7EB; /* gray-200 */
+        --border-color-medium: #D1D5DB; /* gray-300 */
+
+        /* Background Colors */
+        --background-color-page: #FFF6E3; /* warmNeutral-100 */
+        --background-color-card: #FFFFFF; /* white */
+
+        /* Theme Colors (Unified - Purple Based) */
+        --primary-color: #A998F0; /* themePurple-DEFAULT / themePurple-500 */
+        --primary-color-darker: #8F7EE7; /* themePurple-600 */
+        --primary-color-alpha-focus: rgba(169, 152, 240, 0.2); /* themePurple-DEFAULT with 0.2 alpha */
+
+        --secondary-color: #CDC1FF; /* themePurple-300 (for lighter accents, charts) */
+
+        --text-on-primary: #FFFFFF; /* white */
+        --text-on-secondary: #382A77; /* themePurple-950 (for text on light purple backgrounds like themePurple-100/200/300) */
+
+        --fab-bg-color: #A998F0; /* themePurple-DEFAULT */
+
+        /* Button Secondary */
+        --button-secondary-bg: #EDE9FE; /* themePurple-100 */
+        --button-secondary-text: #7C66D8; /* themePurple-700 */
+
+        /* Icon Highlight */
+        --icon-highlight-color: #A998F0; /* themePurple-DEFAULT */
+
+        /* Home Highlight Card (was gradient) */
+        --home-highlight-card-bg: #EDE9FE; /* themePurple-100 */
+        --home-highlight-card-text: #533E9E; /* themePurple-900 */
+
+
+        /* Calendar Specific Backgrounds */
+        --calendar-period-bg: #FEE2E2; /* error-light (was pinkish) */
+        --calendar-fertile-bg: #FEF3C7; /* warning-light (was yellowish) */
+        --calendar-ovulation-bg: #DDD6FE; /* themePurple-200 (was light purple) */
+        --calendar-secretion-bg: #DBEAFE; /* info-light (was light blue) */
+        --calendar-today-bg: #F5F3FF; /* themePurple-50 */
+        --calendar-today-border: #A998F0; /* themePurple-DEFAULT */
+
+        /* Semantic Colors */
+        --color-success: #10B981;
+        --color-error: #EF4444;
+        --color-warning: #F59E0B;
+        --color-info: #3B82F6;
+
+        /* Shared Variables */
+        --button-radius: 25px;
+        --card-radius: 12px;
+      }
+
+      body {
+        font-family: var(--font-family);
+        margin: 0;
+        padding: 0;
+        background-color: var(--background-color-page);
+        color: var(--text-color-dark);
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      .prototype-container {
+        max-width: 420px;
+        margin: 20px auto;
+        border: 1px solid var(--border-color-medium);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        padding-bottom: 60px; /* For bottom nav */
+      }
+
+      .screen {
+        background-color: var(--background-color-page); /* Screens themselves take page background */
+        min-height: 700px;
+        /* border-bottom: 2px dashed var(--border-color-soft); */ /* Not needed for every screen if using cards */
+        padding: 15px;
+        position: relative;
+        display: none;
+      }
+
+      .screen.active {
+        display: block;
+      }
+
+      .screen-title {
+        font-size: 1.5em;
+        font-weight: bold;
+        color: var(--primary-color);
+        margin-bottom: 20px;
+        text-align: center;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border-color-soft);
+      }
+
+      .screen h3 { /* Sub-headings within screens or cards */
+        font-size: 1.1em;
+        color: var(--text-color-medium);
+        margin-top: 20px;
+        margin-bottom: 10px;
+      }
+
+      .button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: var(--primary-color);
+        color: var(--text-on-primary);
+        border: none;
+        border-radius: var(--button-radius);
+        text-align: center;
+        text-decoration: none;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin-top: 10px;
+        margin-right: 5px;
+      }
+
+      .button:hover {
+        background-color: var(--primary-color-darker);
+      }
+
+      .button-secondary {
+        background-color: var(--button-secondary-bg);
+        color: var(--button-secondary-text);
+      }
+
+      .button-secondary:hover {
+        opacity: 0.8;
+      }
+
+      .button-block {
+        display: block;
+        width: calc(100% - 40px); /* Assuming padding: 20px for button parent or use 100% and box-sizing */
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .input-group {
+        margin-bottom: 15px;
+      }
+
+      .input-group label {
+        display: block;
+        margin-bottom: 5px;
+        color: var(--text-color-light);
+        font-weight: 500;
+      }
+
+      .input-group input[type="text"], .input-group input[type="email"], .input-group input[type="password"], .input-group input[type="date"], .input-group input[type="time"], .input-group input[type="number"], .input-group select, .input-group textarea {
+        width: calc(100% - 22px);
+        padding: 10px;
+        border: 1px solid var(--border-color-medium);
+        border-radius: 8px;
+        font-size: 1em;
+        box-sizing: border-box;
+        background-color: var(--background-color-card);
+        color: var(--text-color-dark);
+      }
+
+      .input-group input:focus, .input-group select:focus, .input-group textarea:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px var(--primary-color-alpha-focus);
+      }
+
+      .input-group textarea {
+        min-height: 80px;
+        resize: vertical;
+      }
+
+      .radio-group label {
+        margin-right: 15px;
+        font-weight: normal;
+        color: var(--text-color-medium);
+      }
+
+      .radio-group input[type="radio"] {
+        margin-right: 5px;
+        accent-color: var(--primary-color);
+      }
+
+      .icon {
+        margin-right: 8px;
+      }
+
+      .bottom-nav {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        justify-content: space-around;
+        background-color: var(--background-color-card);
+        border-top: 1px solid var(--border-color-soft);
+        padding: 10px 0;
+        box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+      }
+
+      .nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: var(--text-color-light);
+        cursor: pointer;
+        font-size: 0.8em;
+        text-decoration: none;
+      }
+
+      .nav-item i {
+        font-size: 1.5em;
+        margin-bottom: 4px;
+      }
+
+      .nav-item.active {
+        color: var(--primary-color);
+      }
+
+      .nav-item.active i {
+        color: var(--primary-color);
+      }
+
+      .fab {
+        position: absolute;
+        bottom: 70px;
+        right: 20px; /* Ensure it's above bottom-nav */
+        background-color: var(--fab-bg-color);
+        color: var(--text-on-primary);
+        width: 56px;
+        height: 56px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.8em;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+        z-index: 990;
+      }
+
+      .card {
+        background-color: var(--background-color-card);
+        border-radius: var(--card-radius);
+        padding: 15px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      }
+
+      .card-title {
+        font-size: 1.1em;
+        font-weight: bold;
+        color: var(--text-color-dark);
+        margin-bottom: 10px;
+      }
+
+      .card-content p {
+        font-size: 0.95em;
+        color: var(--text-color-medium);
+        line-height: 1.6;
+        margin: 5px 0;
+      }
+
+      .home-highlight-card {
+        background: var(--home-highlight-card-bg);
+        color: var(--home-highlight-card-text);
+      }
+
+      .home-highlight-card .card-title {
+        color: var(--home-highlight-card-text);
+        opacity: 0.9;
+      }
+
+      .home-highlight-card h1 {
+        color: var(--home-highlight-card-text);
+      }
+
+      .home-highlight-card p {
+        color: var(--home-highlight-card-text);
+        opacity: 0.9;
+      }
+
+      .text-center {
+        text-align: center;
+      }
+
+      .text-muted {
+        color: var(--text-color-light);
+        font-size: 0.9em;
+      }
+
+      .mt-2 {
+        margin-top: 10px;
+      }
+
+      .mb-2 {
+        margin-bottom: 10px;
+      }
+
+      /* Calendar Styles */
+      .calendar {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+        text-align: center;
+      }
+
+      .calendar-header {
+        font-weight: bold;
+        color: var(--text-color-light);
+        padding: 8px 0;
+        font-size: 0.9em;
+      }
+
+      .calendar-day {
+        padding: 10px 5px;
+        border: 1px solid var(--border-color-soft);
+        border-radius: 6px;
+        font-size: 0.85em;
+        cursor: pointer;
+        position: relative;
+        min-height: 45px;
+        box-sizing: border-box;
+        background-color: var(--background-color-card); /* Day cells are cards */
+      }
+
+      .calendar-day:hover {
+        background-color: var(--button-secondary-bg);
+      }
+
+      /* Light hover */
+      .calendar-day.today {
+        border-color: var(--calendar-today-border);
+        font-weight: bold;
+        background-color: var(--calendar-today-bg);
+      }
+
+      .calendar-day.today .day-number {
+        color: var(--icon-highlight-color);
+      }
+
+      .theme-female .calendar-day.period {
+        background-color: var(--calendar-period-bg);
+      }
+
+      .theme-female .calendar-day.fertile {
+        background-color: var(--calendar-fertile-bg);
+      }
+
+      .theme-female .calendar-day.ovulation {
+        background-color: var(--calendar-ovulation-bg);
+      }
+
+      .theme-male .calendar-day.secretion {
+        background-color: var(--calendar-secretion-bg);
+      }
+
+      .calendar-day .day-number {
+        display: block;
+        margin-bottom: 3px;
+        color: var(--text-color-dark);
+      }
+
+      .event-icons {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 3px;
+        font-size: 0.8em;
+        position: absolute;
+        bottom: 3px;
+        left: 0;
+        right: 0;
+        padding: 0 2px;
+      }
+
+      .event-icons i {
+        opacity: 0.8;
+      }
+
+      .theme-female .event-icons .fa-tint {
+        color: var(--primary-color);
+      }
+
+      /* Or a specific error color if period is seen as such */
+      .theme-male .event-icons .fa-cloud {
+        color: var(--primary-color);
+      }
+
+      /* Or a specific info color */
+      .event-icons .fa-heart {
+        color: var(--color-error);
+      }
+
+      /* Was #dd6b20 */
+      .event-icons .fa-hand-paper {
+        color: var(--color-success);
+      }
+
+      /* Was #38a169 */
+      .event-icons .fa-sticky-note {
+        color: var(--color-warning);
+        opacity: 0.7;
+      }
+
+      /* Was #dd6b20 */
+
+      /* Choice Grid */
+      .choice-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+
+      .choice-item {
+        padding: 8px 12px;
+        border: 1px solid var(--border-color-medium);
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 0.9em;
+        display: flex;
+        align-items: center;
+        color: var(--text-color-medium);
+        background-color: var(--background-color-card);
+      }
+
+      .choice-item i {
+        margin-right: 5px;
+        color: var(--text-color-light);
+      }
+
+      .choice-item.selected {
+        background-color: var(--primary-color);
+        border-color: var(--primary-color);
+        color: var(--text-on-primary);
+      }
+
+      .choice-item.selected i {
+        color: var(--text-on-primary);
+        opacity: 0.8;
+      }
+
+      .form-section-title {
+        font-size: 1em;
+        font-weight: bold;
+        color: var(--primary-color);
+        margin-bottom: 10px;
+        padding-bottom: 5px;
+        border-bottom: 2px solid var(--button-secondary-bg);
+      }
+
+      /* Modal Styles */
+      .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+
+      .modal-overlay.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background-color: var(--background-color-card);
+        padding: 20px;
+        border-radius: var(--card-radius);
+        width: 85%;
+        max-width: 380px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        position: relative;
+      }
+
+      .modal-title {
+        font-size: 1.3em;
+        font-weight: bold;
+        color: var(--text-color-dark);
+        margin-bottom: 15px;
+        text-align: center;
+      }
+
+      .modal-close-btn {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 1.8em;
+        line-height: 1;
+        color: var(--text-color-light);
+        cursor: pointer;
+        border: none;
+        background: none;
+        padding: 0;
+        font-weight: bold;
+      }
+
+      .modal-close-btn:hover {
+        color: var(--text-color-medium);
+      }
+
+      .modal-options .button {
+        display: block;
+        width: 100%;
+        margin: 10px 0;
+        box-sizing: border-box;
+        text-align: left;
+        padding-left: 20px;
+        /* Modal buttons use standard button theming now */
+      }
+
+      .modal-options .button i {
+        margin-right: 12px;
+        width: 20px;
+        text-align: center;
+      }
+
+      /* No need for .theme-female/male specific modal button colors if using standard .button */
+
+      /* Daily Summary Modal */
+      .daily-summary-item {
+        padding: 10px 5px;
+        border-bottom: 1px solid var(--border-color-soft);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.95em;
+      }
+
+      .daily-summary-item:last-child {
+        border-bottom: none;
+      }
+
+      .daily-summary-item .edit-btn {
+        color: var(--primary-color);
+        cursor: pointer;
+        font-size: 0.9em;
+        padding: 5px 8px;
+        border-radius: 5px;
+        background-color: var(--button-secondary-bg);
+      }
+
+      .daily-summary-item .edit-btn:hover {
+        opacity: 0.8;
+      }
+
+      /* Settings Page */
+      .list-item {
+        padding: 15px 5px;
+        cursor: pointer;
+        font-size: 1em;
+        color: var(--text-color-dark);
+        background-color: var(--background-color-card);
+        border-bottom: 1px solid var(--border-color-soft);
+      }
+
+      .list-item:first-child {
+        border-top-left-radius: var(--card-radius);
+        border-top-right-radius: var(--card-radius);
+      }
+
+      .list-item:last-child {
+        border-bottom-left-radius: var(--card-radius);
+        border-bottom-right-radius: var(--card-radius);
+        border-bottom: none;
+      }
+
+      .list-item:hover {
+        background-color: var(--button-secondary-bg);
+      }
+
+      .list-item i.fa-chevron-right {
+        color: var(--text-color-light);
+        float: right;
+        line-height: inherit;
+        padding-top: 3px;
+      }
+
+      /* .settings-hr removed, using border on list-item instead */
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 28px;
+        float: right;
+      }
+
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: var(--border-color-medium);
+        transition: .4s;
+        border-radius: 28px;
+      }
+
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 4px;
+        bottom: 4px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+      }
+
+      input:checked + .slider {
+        background-color: var(--primary-color);
+      }
+
+      input:checked + .slider:before {
+        transform: translateX(22px);
+      }
+
+      /* Chart placeholder */
+      .chart-container {
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid var(--border-color-soft);
+        border-radius: var(--card-radius);
+        background-color: var(--background-color-card);
+      }
+
+      .bar-chart {
+        display: flex;
+        align-items: flex-end;
+        height: 150px;
+        gap: 5px;
+        justify-content: space-around;
+      }
+
+      .bar {
+        background-color: var(--secondary-color);
+        width: 20px;
+      }
+
+      /* Prototype Navigation (fixed at top) */
+      .prototype-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: #262626;
+        color: white;
+        padding: 5px 8px;
+        font-size: 0.75em;
+        z-index: 1001;
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        box-sizing: border-box;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      }
+
+      .prototype-nav button {
+        background-color: #444;
+        color: white;
+        border: 1px solid #555;
+        padding: 4px 7px;
+        margin: 2px;
+        border-radius: 3px;
+        cursor: pointer;
+        font-size: 0.9em;
+      }
+
+      .prototype-nav button:hover {
+        background-color: #5e5e5e;
+      }
+
+      /* Ensure FAB is above bottom nav if screen is short */
+      .screen {
+        padding-bottom: 70px;
+      }
+
+      /* Add padding for FAB and Nav */
+      .bottom-nav {
+        position: fixed; /* Make nav always stick to bottom of viewport */
+        bottom: 0;
+        left: 0; /* Align with viewport */
+        right: 0; /* Align with viewport */
+        max-width: 420px; /* Max width of container */
+        margin: 0 auto; /* Center it */
+        border-left: 1px solid var(--border-color-soft); /* Match container border */
+        border-right: 1px solid var(--border-color-soft); /* Match container border */
+      }
+
+      .fab {
+        position: fixed; /* Make FAB stick relative to viewport */
+        bottom: 80px; /* Above nav */
+        right: calc(50% - 190px); /* Adjust right relative to centered container */
+        /* max-width already set for prototype-container */
+      }
+
+
+    </style>
+</head>
+<body class="">
+<div class="prototype-nav">
+    <button onclick="showScreen('splashScreen')">启动页</button>
+    <button onclick="showScreen('loginScreen')">登录</button>
+    <button onclick="showScreen('signupScreen')">注册</button>
+    <button onclick="showScreen('homeCalendarScreen')">主页/日历</button>
+    <button onclick="showScreen('logMenstrualScreen')">记月经</button>
+    <button onclick="showScreen('logSecretionScreen')">记遗精</button>
+    <button onclick="showScreen('logSexualActivityScreen')">记性行为</button>
+    <button onclick="showScreen('logMasturbationScreen')">记自慰</button>
+    <button onclick="showScreen('logGeneralNoteScreen')">记笔记</button>
+    <button onclick="showScreenConditional('statsFemaleScreen', 'statsMaleScreen')">统计</button>
+    <button onclick="showScreen('settingsScreen')">设置</button>
+</div>
+
+<div class="prototype-container" style="margin-top: 60px;">
+
+    <div class="screen active" id="splashScreen">
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 600px;">
+            <i class="fas fa-spa fa-5x" style="color: var(--color-success);"></i>
+            <h1 style="font-size: 2.5em; color: var(--text-color-dark); margin-top: 20px;">焕 Glow</h1>
+            <p class="text-muted mt-2">记录点滴，关爱自己</p>
+        </div>
+    </div>
+
+    <div class="screen" id="loginScreen">
+        <div class="screen-title">欢迎回来</div>
+        <div class="card">
+            <div class="input-group">
+                <label for="loginEmail"><i class="fas fa-envelope icon"></i>邮箱/用户名</label>
+                <input type="email" id="loginEmail" name="loginEmail" placeholder="请输入您的邮箱或用户名"
+                       value="jane.doe@example.com">
+            </div>
+            <div class="input-group">
+                <label for="loginPassword"><i class="fas fa-lock icon"></i>密码</label>
+                <input type="password" id="loginPassword" name="loginPassword" placeholder="请输入您的密码"
+                       value="password123">
+            </div>
+            <button class="button button-block" onclick="simulateLogin()">登录</button>
+            <p class="text-center mt-2">
+                <a href="#" onclick="showScreen('signupScreen')"
+                   style="color: var(--primary-color);">还没有账户？立即注册</a>
+            </p>
+            <p class="text-center text-muted mt-2">
+                <a href="#" style="color: var(--text-color-light); font-size:0.9em">忘记密码?</a>
+            </p>
+        </div>
+    </div>
+
+    <div class="screen" id="signupScreen">
+        <div class="screen-title">创建您的账户</div>
+        <div class="card">
+            <div class="input-group"><label for="signupUsername"><i class="fas fa-user icon"></i>用户名</label> <input
+                    type="text" id="signupUsername" name="signupUsername" placeholder="设置您的用户名"></div>
+            <div class="input-group"><label for="signupEmail"><i class="fas fa-envelope icon"></i>邮箱</label> <input
+                    type="email" id="signupEmail" name="signupEmail" placeholder="请输入您的邮箱"></div>
+            <div class="input-group"><label for="signupPassword"><i class="fas fa-lock icon"></i>密码</label> <input
+                    type="password" id="signupPassword" name="signupPassword" placeholder="设置您的密码 (至少6位)">
+            </div>
+            <div class="input-group"><label for="signupConfirmPassword"><i class="fas fa-lock icon"></i>确认密码</label>
+                <input type="password" id="signupConfirmPassword" name="signupConfirmPassword"
+                       placeholder="请再次输入密码"></div>
+            <div class="input-group"><label><i class="fas fa-venus-mars icon"></i>生理性别 (注册后不可修改)</label>
+                <div class="radio-group"><label><input type="radio" name="gender" value="female" checked> 女性</label>
+                    <label><input type="radio" name="gender" value="male"> 男性</label></div>
+            </div>
+            <div class="input-group" style="font-size: 0.8em; color: var(--text-color-light);"><input type="checkbox"
+                                                                                                      id="terms"
+                                                                                                      name="terms"
+                                                                                                      style="margin-right: 5px; vertical-align: middle;">
+                <label for="terms" style="display:inline; font-weight:normal;">我已阅读并同意 <a href="#"
+                                                                                                 style="color: var(--primary-color);">服务条款</a>
+                    和 <a href="#" style="color: var(--primary-color);">隐私政策</a>。</label></div>
+            <button class="button button-block" onclick="handleRegistration()">注册</button>
+            <p class="text-center mt-2"><a href="#" onclick="showScreen('loginScreen')"
+                                           style="color: var(--primary-color);">已有账户？直接登录</a></p>
+        </div>
+    </div>
+
+    <div class="screen" id="homeCalendarScreen">
+        <div class="screen-title" style="margin-bottom: 10px;"><i class="fas fa-home icon"></i><span
+                id="homeCalendarTitle">主页与日历</span></div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding: 10px; background-color: var(--background-color-card); border-radius: var(--card-radius); box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+            <div>
+                <h2 style="margin:0; font-size: 1.6em; color: var(--text-color-dark);" id="homeUsernameEl">Hi,
+                    [用户名]!</h2>
+                <p class="text-muted" style="margin:0;" id="homeUserSubtextEl">今天也要元气满满哦！</p>
+            </div>
+            <i class="fas fa-user-circle fa-2x" style="color: var(--text-color-light); cursor:pointer;"
+               onclick="showScreen('settingsScreen')"></i>
+        </div>
+
+        <div class="card home-highlight-card" id="mainHighlightCard">
+            <div class="theme-female-only" style="display:none;">
+                <div class="card-title"><i class="fas fa-tint icon"></i>当前周期</div>
+                <div id="femaleCycleInfo" class="card-content text-center">
+                    <h1 style="font-size: 2.2em; margin: 8px 0;">月经期 第 <span style="font-size:1.3em;">3</span> 天
+                    </h1>
+                    <p style="font-size:0.9em;">预计下次月经: 6月15日 (还有22天)</p>
+                    <p style="font-size:0.9em;">易孕期: 6月1日 - 6月6日</p>
+                </div>
+            </div>
+            <div class="theme-male-only" style="display:none;">
+                <div class="card-title"><i class="fas fa-male icon"></i>近期生理记录</div>
+                <div id="malePhysioInfo" class="card-content text-center">
+                    <p style="font-size: 1.2em; margin: 8px 0;">最近一次遗精: 5月20日</p>
+                    <p style="font-size: 1.1em;">(距离上次 <span style="font-weight:bold;">8</span> 天)</p>
+                </div>
+            </div>
+            <div class="no-gender-only" style="display:none;">
+                <p class="text-center">请更新您的生理性别以查看相关信息。</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
+                <span><i class="fas fa-calendar-alt icon"></i>健康日历</span>
+                <span id="calendarMonthYearEl"
+                      style="font-size: 0.9em; font-weight: normal; color: var(--text-color-medium);">2025 年 5 月</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <button class="button-secondary" style="padding: 8px;" onclick="changeMonth(-1)"><i
+                        class="fas fa-chevron-left"></i></button>
+                <h3 style="margin:0; color: var(--text-color-dark); font-size:1.2em;"
+                    id="calendarMonthYearDisplayEl"></h3>
+                <button class="button-secondary" style="padding: 8px;" onclick="changeMonth(1)"><i
+                        class="fas fa-chevron-right"></i></button>
+            </div>
+            <div class="calendar" id="calendarGridEl"></div>
+            <div style="margin-top:15px; font-size:0.8em; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; padding: 8px; background-color: var(--background-color-page); border-radius: 8px;">
+                <span class="theme-female-only" style="display:none;"><i class="fas fa-tint icon"
+                                                                         style="color:var(--primary-color);"></i>月经</span>
+                <span class="theme-female-only" style="display:none;"><i class="fas fa-lightbulb icon"
+                                                                         style="color:var(--calendar-fertile-bg); background-color: var(--text-color-light); border-radius:3px; padding:1px 2px; "></i>易孕</span>
+                <span class="theme-male-only" style="display:none;"><i class="fas fa-cloud icon"
+                                                                       style="color:var(--primary-color);"></i>遗精</span>
+                <span><i class="fas fa-heart icon" style="color:var(--color-error);"></i>性行为</span>
+                <span><i class="fas fa-hand-paper icon" style="color:var(--color-success);"></i>自慰</span>
+                <span><i class="fas fa-sticky-note icon"
+                         style="color:var(--color-warning); opacity:0.7;"></i>笔记</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title"><i class="fas fa-notes-medical icon"></i>今日记录摘要
+                <button class="button-secondary"
+                        style="float:right; padding: 5px 10px; font-size:0.8em; margin-top: -5px;"
+                        onclick="openRecordTypeModal(currentDateStr)"><i class="fas fa-plus"></i> 添加
+                </button>
+            </div>
+            <div id="homeSummaryEl" class="card-content"></div>
+        </div>
+
+        <div class="card">
+            <div class="card-title"><i class="fas fa-lightbulb icon"></i>健康小贴士</div>
+            <div id="healthTipsEl" class="card-content">
+                <p class="theme-female-only" style="display:none;">经期多喝热水，尝试瑜伽放松，有助于缓解不适。</p>
+                <p class="theme-male-only" style="display:none;">规律作息和适度运动有助于维持身体机能。关注压力管理。</p>
+                <p class="no-gender-only" style="display:none;">保持健康的生活方式！</p>
+            </div>
+        </div>
+
+        <div class="fab" onclick="openRecordTypeModal(currentDateStr)"><i class="fas fa-plus"></i></div>
+        <div class="bottom-nav">
+            <div class="nav-item active" onclick="showScreen('homeCalendarScreen')"><i class="fas fa-home"></i>主页
+            </div>
+            <div class="nav-item" onclick="showScreenConditional('statsFemaleScreen', 'statsMaleScreen')"><i
+                    class="fas fa-chart-line"></i>统计
+            </div>
+            <div class="nav-item" onclick="showScreen('settingsScreen')"><i class="fas fa-cog"></i>设置</div>
+        </div>
+    </div>
+
+    <div class="screen" id="homeFemaleScreen" style="display:none;"></div>
+    <div class="screen" id="homeMaleScreen" style="display:none;"></div>
+    <div class="screen" id="calendarScreen" style="display:none;"></div>
+
+
+    <div class="modal-overlay" id="recordTypeModalEl">
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeModal('recordTypeModalEl')">&times;</button>
+            <div class="modal-title">选择记录类型</div>
+            <input type="hidden" id="recordModalDateEl">
+            <div class="modal-options" id="recordTypeOptionsFemaleEl" style="display:none;">
+                <button class="button" onclick="navigateToLogScreen('logMenstrualScreen')"><i class="fas fa-tint"></i>记录经期与症状
+                </button>
+                <button class="button" onclick="navigateToLogScreen('logSexualActivityScreen')"><i
+                        class="fas fa-heart"></i>记录性行为
+                </button>
+                <button class="button" onclick="navigateToLogScreen('logMasturbationScreen')"><i
+                        class="fas fa-hand-paper"></i>记录自慰
+                </button>
+                <button class="button" onclick="navigateToLogScreen('logGeneralNoteScreen')"><i
+                        class="fas fa-sticky-note"></i>记录普通笔记
+                </button>
+            </div>
+            <div class="modal-options" id="recordTypeOptionsMaleEl" style="display:none;">
+                <button class="button" onclick="navigateToLogScreen('logSecretionScreen')"><i class="fas fa-cloud"></i>记录遗精
+                </button>
+                <button class="button" onclick="navigateToLogScreen('logSexualActivityScreen')"><i
+                        class="fas fa-heart"></i>记录性行为
+                </button>
+                <button class="button" onclick="navigateToLogScreen('logMasturbationScreen')"><i
+                        class="fas fa-hand-paper"></i>记录自慰
+                </button>
+                <button class="button" onclick="navigateToLogScreen('logGeneralNoteScreen')"><i
+                        class="fas fa-sticky-note"></i>记录普通笔记
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="dailySummaryModalEl">
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeModal('dailySummaryModalEl')">&times;</button>
+            <div class="modal-title" id="dailySummaryTitleEl">本日记录</div>
+            <div id="dailySummaryContentEl" style="margin-bottom: 20px; max-height: 200px; overflow-y: auto;"></div>
+            <button class="button button-block" onclick="addAnotherRecordFromSummary()"><i class="fas fa-plus icon"></i>
+                添加本日新纪录
+            </button>
+        </div>
+    </div>
+
+    <div class="screen" id="logMenstrualScreen">
+        <div class="screen-title"><i class="fas fa-tint icon"></i>记录经期与症状</div>
+        <div class="card">
+            <input type="hidden" id="logMenstrualDateInputEl">
+            <div class="input-group"><label>日期</label> <input type="date" id="logMenstrualDateDisplayEl" disabled>
+            </div>
+            <div class="input-group"><label><i class="fas fa-adjust icon"></i>月经状态</label> <select
+                    id="menstrualStatusSelect">
+                <option value="unrecorded">未记录</option>
+                <option value="period_ongoing">月经期</option>
+                <option value="period_ended">月经结束</option>
+            </select></div>
+            <div class="input-group"><label><i class="fas fa-tint icon"></i>流量</label>
+                <div class="choice-grid" id="menstrualFlowGrid"><span class="choice-item"
+                                                                      data-value="spotting">点滴</span><span
+                        class="choice-item" data-value="light">少量</span><span class="choice-item" data-value="medium">中等</span><span
+                        class="choice-item" data-value="heavy">大量</span></div>
+            </div>
+            <div class="input-group"><label><i class="fas fa-head-side-cough icon"></i>症状 (可多选)</label>
+                <div class="choice-grid" id="menstrualSymptomsGrid"><span class="choice-item"
+                                                                          data-value="cramps">腹痛</span><span
+                        class="choice-item" data-value="headache">头痛</span><span class="choice-item"
+                                                                                   data-value="breast_tenderness">乳房胀痛</span><span
+                        class="choice-item" data-value="fatigue">疲劳</span><span class="choice-item"
+                                                                                  data-value="backache">腰酸</span><span
+                        class="choice-item" data-value="nausea">恶心</span></div>
+            </div>
+            <div class="input-group"><label><i class="far fa-smile-beam icon"></i>心情</label>
+                <div class="choice-grid" id="menstrualMoodGrid"><span class="choice-item" data-value="happy">开心</span><span
+                        class="choice-item" data-value="calm">平静</span><span class="choice-item" data-value="neutral">一般</span><span
+                        class="choice-item" data-value="sad">低落</span><span class="choice-item"
+                                                                              data-value="irritable">烦躁</span></div>
+            </div>
+            <div class="input-group"><label><i class="fas fa-sticky-note icon"></i>备注</label> <textarea
+                    id="menstrualNotesTextarea"></textarea></div>
+            <button class="button button-block" onclick="saveRecordAndGoBack()">保存</button>
+        </div>
+    </div>
+
+    <div class="screen" id="logSecretionScreen">
+        <div class="screen-title"><i class="fas fa-cloud icon"></i>记录遗精</div>
+        <div class="card">
+            <input type="hidden" id="logSecretionDateInputEl">
+            <div class="input-group"><label>日期</label> <input type="date" id="logSecretionDateDisplayEl" disabled>
+            </div>
+            <div class="input-group"><label><i class="fas fa-sticky-note icon"></i>备注 (可选)</label> <textarea
+                    id="secretionNotesTextarea" placeholder="梦境，身体感受等..."></textarea></div>
+            <button class="button button-block" onclick="saveRecordAndGoBack()">保存</button>
+        </div>
+    </div>
+
+    <div class="screen" id="logSexualActivityScreen">
+        <div class="screen-title" id="logSexualActivityTitleEl"><i class="fas fa-heart icon"></i>记录性行为</div>
+        <div class="card">
+            <input type="hidden" id="logSexualActivityDateInputEl">
+            <div class="input-group"><label>日期</label> <input type="date" id="logSexualActivityDateDisplayEl"
+                                                                disabled></div>
+            <div class="input-group"><label><i class="far fa-clock icon"></i>时间 (可选)</label><input type="time"
+                                                                                                       id="sexualActivityTimeInput">
+            </div>
+            <div class="input-group"><label><i class="fas fa-users icon"></i>伴侣 (可选)</label><input type="text"
+                                                                                                       id="sexualActivityPartnerInput"
+                                                                                                       placeholder="例如：伴侣A, 或不填">
+            </div>
+            <div class="input-group"><label><i class="fas fa-shield-alt icon"></i>避孕措施</label><select
+                    id="sexualActivityContraceptionSelect">
+                <option value="unrecorded">未记录</option>
+                <option value="condom">安全套</option>
+                <option value="pill_short">口服短效避孕药</option>
+                <option value="pill_emergency">口服紧急避孕药</option>
+                <option value="iud">体内装置(IUD)</option>
+                <option value="withdrawal">体外</option>
+                <option value="rhythm">安全期</option>
+                <option value="none">无</option>
+                <option value="other">其他</option>
+            </select></div>
+            <div class="input-group"><label><i class="fas fa-check-circle icon"></i>是否使用保护措施
+                (防STI)</label><select id="sexualActivityProtectionSelect">
+                <option value="unrecorded">未记录</option>
+                <option value="yes_condom">是 (如安全套)</option>
+                <option value="no">否</option>
+            </select></div>
+            <div class="input-group theme-female-only" id="femaleOrgasmSectionLogEl" style="display:none;"><label><i
+                    class="fas fa-star icon"></i>高潮 (女方)</label><select id="sexualActivityFemaleOrgasmSelect">
+                <option value="unrecorded">未记录</option>
+                <option value="no">无</option>
+                <option value="yes">有</option>
+            </select></div>
+            <div class="input-group theme-male-only" id="maleOrgasmSectionLogEl" style="display:none;"><label><i
+                    class="fas fa-star icon"></i>高潮 (男方)</label><select id="sexualActivityMaleOrgasmSelect">
+                <option value="unrecorded">未记录</option>
+                <option value="no">无</option>
+                <option value="yes">有</option>
+            </select></div>
+            <div class="input-group"><label><i class="fas fa-sticky-note icon"></i>备注</label> <textarea
+                    id="sexualActivityNotesTextarea" placeholder="感受，地点等..."></textarea></div>
+            <button class="button button-block" onclick="saveRecordAndGoBack()">保存</button>
+        </div>
+    </div>
+
+    <div class="screen" id="logMasturbationScreen">
+        <div class="screen-title"><i class="fas fa-hand-paper icon"></i>记录自慰</div>
+        <div class="card">
+            <input type="hidden" id="logMasturbationDateInputEl">
+            <div class="input-group"><label>日期</label> <input type="date" id="logMasturbationDateDisplayEl" disabled>
+            </div>
+            <div class="input-group"><label><i class="far fa-clock icon"></i>时间 (可选)</label><input type="time"
+                                                                                                       id="masturbationTimeInput">
+            </div>
+            <div class="input-group"><label><i class="fas fa-sticky-note icon"></i>备注 (可选)</label> <textarea
+                    id="masturbationNotesTextarea"></textarea></div>
+            <button class="button button-block" onclick="saveRecordAndGoBack()">保存</button>
+        </div>
+    </div>
+
+    <div class="screen" id="logGeneralNoteScreen">
+        <div class="screen-title"><i class="fas fa-sticky-note icon"></i>记录普通笔记</div>
+        <div class="card">
+            <input type="hidden" id="logGeneralNoteDateInputEl">
+            <div class="input-group"><label>日期</label> <input type="date" id="logGeneralNoteDateDisplayEl" disabled>
+            </div>
+            <div class="input-group"><label><i class="fas fa-pencil-alt icon"></i>笔记内容</label> <textarea
+                    id="generalNoteContentTextarea"
+                    placeholder="记录任何您想记下的事情，如症状、情绪、服药等..."></textarea></div>
+            <button class="button button-block" onclick="saveRecordAndGoBack()">保存</button>
+        </div>
+    </div>
+
+    <div class="screen" id="statsFemaleScreen">
+        <div class="screen-title"><i class="fas fa-chart-line icon"></i>统计与洞察 (女)</div>
+        <div class="card">
+            <div class="card-title"><i class="fas fa-sync-alt icon"></i>平均周期长度</div>
+            <div class="card-content text-center"><h2
+                    style="font-size: 2em; color: var(--primary-color); margin: 5px 0;">29 天</h2>
+                <p class="text-muted">基于最近6个周期</p></div>
+        </div>
+        <div class="card">
+            <div class="card-title"><i class="fas fa-heartbeat icon"></i>性行为频率 (本月)</div>
+            <div class="card-content text-center"><h2 style="font-size: 2em; color: var(--color-error); margin: 5px 0;">
+                4 次</h2></div>
+        </div>
+        <div class="card">
+            <div class="card-title"><i class="fas fa-tags icon"></i>常见症状 (最近3个月)</div>
+            <div class="card-content"><p>腹痛 (8次), 疲劳 (6次), 情绪波动 (5次)</p></div>
+        </div>
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="showScreen('homeCalendarScreen')"><i class="fas fa-home"></i>主页</div>
+            <div class="nav-item active" onclick="showScreenConditional('statsFemaleScreen', 'statsMaleScreen')"><i
+                    class="fas fa-chart-line"></i>统计
+            </div>
+            <div class="nav-item" onclick="showScreen('settingsScreen')"><i class="fas fa-cog"></i>设置</div>
+        </div>
+    </div>
+
+    <div class="screen" id="statsMaleScreen">
+        <div class="screen-title"><i class="fas fa-chart-bar icon"></i>记录统计 (男)</div>
+        <div class="card">
+            <div class="card-title"><i class="fas fa-history icon"></i>平均遗精间隔</div>
+            <div class="card-content text-center"><h2
+                    style="font-size: 2em; color: var(--primary-color); margin: 5px 0;">12 天</h2>
+                <p class="text-muted">基于最近5次记录</p></div>
+        </div>
+        <div class="card">
+            <div class="card-title"><i class="fas fa-heartbeat icon"></i>性行为频率 (本月)</div>
+            <div class="card-content text-center"><h2 style="font-size: 2em; color: var(--color-error); margin: 5px 0;">
+                3 次</h2></div>
+        </div>
+        <div class="card">
+            <div class="card-title"><i class="fas fa-hand-paper icon"></i>自慰频率 (本月)</div>
+            <div class="card-content text-center"><h2
+                    style="font-size: 2em; color: var(--color-success); margin: 5px 0;">5 次</h2></div>
+        </div>
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="showScreen('homeCalendarScreen')"><i class="fas fa-home"></i>主页</div>
+            <div class="nav-item active" onclick="showScreenConditional('statsFemaleScreen', 'statsMaleScreen')"><i
+                    class="fas fa-chart-bar"></i>统计
+            </div>
+            <div class="nav-item" onclick="showScreen('settingsScreen')"><i class="fas fa-cog"></i>设置</div>
+        </div>
+    </div>
+
+    <div class="screen" id="settingsScreen">
+        <div class="screen-title"><i class="fas fa-cog icon"></i>设置</div>
+        <div class="list-item" onclick="alert('跳转到账户管理')"><i class="fas fa-user-circle icon"></i> <span
+                id="settingsUsernameEl">账户与同步 ([用户名])</span> <i class="fas fa-chevron-right"></i></div>
+        <div class="list-item" onclick="alert('跳转到隐私设置')"><i class="fas fa-shield-alt icon"></i> 隐私与安全
+            (设置密码锁) <i class="fas fa-chevron-right"></i></div>
+        <div class="list-item" onclick="alert('跳转到提醒设置')"><i class="fas fa-bell icon"></i> 提醒设置 <i
+                class="fas fa-chevron-right"></i></div>
+        <div class="list-item"><i class="fas fa-palette icon"></i> 深色模式 <label class="switch"> <input
+                type="checkbox" onchange="toggleDarkMode(this.checked)"> <span class="slider round"></span> </label>
+        </div>
+        <div class="list-item" onclick="alert('跳转到数据管理')"><i class="fas fa-database icon"></i> 数据管理 (导出/导入)
+            <i class="fas fa-chevron-right"></i></div>
+        <div class="list-item" onclick="alert('跳转到帮助与反馈')"><i class="fas fa-question-circle icon"></i> 帮助与反馈
+            <i class="fas fa-chevron-right"></i></div>
+        <div class="list-item" onclick="alert('跳转到关于页面')"><i class="fas fa-info-circle icon"></i> 关于焕Glow <i
+                class="fas fa-chevron-right"></i></div>
+        <button class="button button-secondary button-block"
+                style="margin-top: 30px; border: 1px solid var(--color-error); color:var(--color-error); background-color: var(--background-color-card);"
+                onclick="logout()">退出登录
+        </button>
+        <div class="bottom-nav">
+            <div class="nav-item" onclick="showScreen('homeCalendarScreen')"><i class="fas fa-home"></i>主页</div>
+            <div class="nav-item" onclick="showScreenConditional('statsFemaleScreen', 'statsMaleScreen')"><i
+                    class="fas fa-chart-line"></i>统计
+            </div>
+            <div class="nav-item active" onclick="showScreen('settingsScreen')"><i class="fas fa-cog"></i>设置</div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+  let currentScreenId = 'splashScreen'
+  let userGender = null
+  let loggedInUsername = '[用户名]'
+
+  let calendarDate = new Date() // Date object for current calendar view month/year
+  let currentDateStr = new Date().toISOString().slice(0, 10) // Today's date string
+
+  let previousScreenId = 'splashScreen'
+  let currentEditingRecordId = null
+  let currentEditingDate = null
+
+  const screens = document.querySelectorAll('.screen')
+  const bodyEl = document.body
+
+  // DOM Elements
+  const recordTypeModalEl = document.getElementById('recordTypeModalEl')
+  const dailySummaryModalEl = document.getElementById('dailySummaryModalEl')
+  const recordModalDateInputEl = document.getElementById('recordModalDateEl')
+  const calendarGridEl = document.getElementById('calendarGridEl')
+  const calendarMonthYearDisplayEl = document.getElementById('calendarMonthYearDisplayEl') // For merged screen
+
+  // Merged Home/Calendar screen elements
+  const homeUsernameEl = document.getElementById('homeUsernameEl')
+  const homeUserSubtextEl = document.getElementById('homeUserSubtextEl')
+  const mainHighlightCard = document.getElementById('mainHighlightCard')
+  const femaleCycleInfoEl = document.getElementById('femaleCycleInfo') // Assuming you might want to target inner parts
+  const malePhysioInfoEl = document.getElementById('malePhysioInfo')   // Assuming you might want to target inner parts
+  const homeSummaryEl = document.getElementById('homeSummaryEl')
+  const healthTipsEl = document.getElementById('healthTipsEl')
+
+  let dailyRecords = { /* Mock data store */ }
+
+  function applyThemeAndGenderSpecificUI (gender) {
+    bodyEl.classList.remove('theme-female', 'theme-male')
+    if (gender) {
+      bodyEl.classList.add(`theme-${gender}`)
+    }
+    // Show/hide theme-specific legend/content items
+    document.querySelectorAll('.theme-female-only').forEach(el => el.style.display = (gender === 'female' ? 'block' // or inline-block based on original
+      : 'none'))
+    document.querySelectorAll('.theme-male-only').forEach(el => el.style.display = (gender === 'male' ? 'block' // or inline-block
+      : 'none'))
+    document.querySelectorAll('.no-gender-only').forEach(el => el.style.display = (!gender ? 'block' : 'none'))
+
+    // Update dynamic content on Home/Calendar screen
+    updateHomeCalendarScreenUI()
+  }
+
+  function toggleDarkMode (isDark) {
+    if (isDark) bodyEl.classList.add('dark-mode-active')
+    else bodyEl.classList.remove('dark-mode-active')
+    alert('深色模式切换 (原型中未完全实现完整样式)')
+  }
+
+  function showScreen (screenId, isBackAction = false) {
+    const targetScreen = document.getElementById(screenId)
+    if (!targetScreen) {
+      console.error(`Screen ID "${screenId}" not found. Defaulting to login.`)
+      screenId = 'loginScreen'
+    }
+
+    if (!isBackAction && currentScreenId !== screenId) { // only update previous if actually changing screen
+      previousScreenId = currentScreenId
+    }
+
+    screens.forEach(screen => screen.classList.remove('active'))
+    document.getElementById(screenId).classList.add('active')
+    currentScreenId = screenId
+
+    updateBottomNavActiveState(screenId)
+    window.scrollTo(0, 0)
+
+    if (screenId === 'homeCalendarScreen') {
+      generateCalendar(calendarDate.getFullYear(), calendarDate.getMonth())
+      updateHomeCalendarScreenUI() // Ensure UI is fresh
+    }
+  }
+
+  function showScreenConditional (femaleScreenId, maleScreenId) {
+    if (userGender === 'female') showScreen(femaleScreenId)
+    else if (userGender === 'male') showScreen(maleScreenId)
+    else showScreen('loginScreen') // Or a default stats screen if any
+  }
+
+  function updateHomeCalendarScreenUI () {
+    if (!loggedInUsername || !homeUsernameEl || !homeUserSubtextEl || !mainHighlightCard || !healthTipsEl) return
+
+    homeUsernameEl.textContent = `Hi, ${loggedInUsername}!`
+    document.getElementById('settingsUsernameEl').textContent = `账户与同步 (${loggedInUsername})`
+
+    // Clear previous gender-specific content just in case
+    mainHighlightCard.querySelector('.theme-female-only').style.display = 'none'
+    mainHighlightCard.querySelector('.theme-male-only').style.display = 'none'
+    mainHighlightCard.querySelector('.no-gender-only').style.display = 'none'
+    healthTipsEl.querySelector('.theme-female-only').style.display = 'none'
+    healthTipsEl.querySelector('.theme-male-only').style.display = 'none'
+    healthTipsEl.querySelector('.no-gender-only').style.display = 'none'
+
+    if (userGender === 'female') {
+      homeUserSubtextEl.textContent = '今天也要元气满满哦！'
+      mainHighlightCard.querySelector('.theme-female-only').style.display = 'block'
+      // TODO: Populate actual femaleCycleInfoEl content here based on data
+      // e.g., femaleCycleInfoEl.innerHTML = `<h1>月经期 第 X 天</h1>...`;
+      healthTipsEl.querySelector('.theme-female-only').style.display = 'block'
+    } else if (userGender === 'male') {
+      homeUserSubtextEl.textContent = '保持健康，活力充沛！'
+      mainHighlightCard.querySelector('.theme-male-only').style.display = 'block'
+      // TODO: Populate actual malePhysioInfoEl content here
+      healthTipsEl.querySelector('.theme-male-only').style.display = 'block'
+    } else {
+      homeUserSubtextEl.textContent = '欢迎使用焕 Glow!'
+      mainHighlightCard.querySelector('.no-gender-only').style.display = 'block'
+      healthTipsEl.querySelector('.no-gender-only').style.display = 'block'
+    }
+    updateTodaySummary() // Renamed from updateHomeScreenSummary
+  }
+
+  function simulateLogin () {
+    const emailVal = document.getElementById('loginEmail').value
+    const passwordVal = document.getElementById('loginPassword').value
+    if (!emailVal || !passwordVal) {
+      alert('请输入邮箱和密码！')
+      return
+    }
+
+    if (emailVal.toLowerCase().includes('jane') || emailVal.toLowerCase().includes('female')) userGender = 'female'
+    else if (emailVal.toLowerCase().includes('john') || emailVal.toLowerCase().includes('male')) userGender = 'male'
+    else userGender = 'female' // Default
+
+    loggedInUsername = emailVal.split('@')[0] || '用户'
+
+    applyThemeAndGenderSpecificUI(userGender) // This will also call updateHomeCalendarScreenUI
+    calendarDate = new Date() // Reset calendar to current month on login
+    // generateCalendar is called by showScreen('homeCalendarScreen')
+    showScreen('homeCalendarScreen')
+  }
+
+  function handleRegistration () {
+    const genderRadios = document.getElementsByName('gender')
+    for (const radio of genderRadios) {
+      if (radio.checked) {
+        userGender = radio.value
+        break
+      }
+    }
+    const usernameVal = document.getElementById('signupUsername').value
+    loggedInUsername = usernameVal || '新用户'
+
+    if (userGender) {
+      applyThemeAndGenderSpecificUI(userGender)
+      dailyRecords = {}
+      addInitialMockRecords()
+      calendarDate = new Date() // Reset calendar to current month
+      showScreen('homeCalendarScreen')
+    } else { alert('请选择生理性别') }
+  }
+
+  function logout () {
+    userGender = null
+    loggedInUsername = '[用户名]'
+    applyThemeAndGenderSpecificUI(null)
+    showScreen('loginScreen')
+  }
+
+  function openModal (modalId) { document.getElementById(modalId).classList.add('active') }
+
+  function closeModal (modalId) { document.getElementById(modalId).classList.remove('active') }
+
+  function openRecordTypeModal (dateForRecord) {
+    currentEditingDate = dateForRecord
+    recordModalDateInputEl.value = dateForRecord
+    if (!userGender) {
+      alert('请先登录并设置性别。') // Or navigate to login/profile
+      showScreen('loginScreen')
+      return
+    }
+    document.getElementById('recordTypeOptionsFemaleEl').style.display = (userGender === 'female' ? 'block' : 'none')
+    document.getElementById('recordTypeOptionsMaleEl').style.display = (userGender === 'male' ? 'block' : 'none')
+    openModal('recordTypeModalEl')
+  }
+
+  function navigateToLogScreen (logScreenId, recordId = null) {
+    closeModal('recordTypeModalEl')
+    closeModal('dailySummaryModalEl')
+    currentEditingRecordId = recordId
+    const dateForRecord = currentEditingDate || recordModalDateInputEl.value || currentDateStr
+
+    document.getElementById(`${logScreenId}DateInputEl`)?.setAttribute('value', dateForRecord)
+    document.getElementById(`${logScreenId}DateDisplayEl`)?.setAttribute('value', dateForRecord)
+
+    clearLogScreen(logScreenId)
+    if (recordId) populateLogScreenForEditing(logScreenId, recordId, dateForRecord)
+
+    if (logScreenId === 'logSexualActivityScreen') {
+      document.getElementById('logSexualActivityTitleEl').innerHTML = `<i class="fas fa-heart icon"></i>记录性行为`
+      // Control visibility using CSS classes '.theme-female-only' and '.theme-male-only'
+      // JS sets body class, CSS handles display.
+      // document.getElementById('femaleOrgasmSectionLogEl').style.display = userGender === 'female' ? 'block' : 'none';
+      // document.getElementById('maleOrgasmSectionLogEl').style.display = userGender === 'male' ? 'block' : 'none';
+    }
+    showScreen(logScreenId)
+  }
+
+  function clearLogScreen (logScreenId) {
+    const screen = document.getElementById(logScreenId)
+    if (!screen) return
+    screen.querySelectorAll('input[type="text"], input[type="time"], textarea').forEach(el => el.value = '')
+    screen.querySelectorAll('select').forEach(el => el.selectedIndex = 0)
+    screen.querySelectorAll('.choice-item.selected').forEach(el => el.classList.remove('selected'))
+  }
+
+  function populateLogScreenForEditing (logScreenId, recordId, dateStr) {
+    const records = dailyRecords[dateStr] || []
+    const record = records.find(r => r.id === recordId)
+    if (!record) {
+      alert('找不到要编辑的记录!')
+      return
+    }
+    currentEditingDate = dateStr
+
+    if (logScreenId === 'logMenstrualScreen' && record.type === '月经') {
+      document.getElementById('menstrualStatusSelect').value = record.data.status || 'unrecorded'
+      selectChoiceItems('menstrualFlowGrid', record.data.flow)
+      selectChoiceItems('menstrualSymptomsGrid', record.data.symptoms || [])
+      selectChoiceItems('menstrualMoodGrid', record.data.mood)
+      document.getElementById('menstrualNotesTextarea').value = record.data.notes || ''
+    } else if (logScreenId === 'logSecretionScreen' && record.type === '遗精') {
+      document.getElementById('secretionNotesTextarea').value = record.data.notes || ''
+    } else if (logScreenId === 'logSexualActivityScreen' && record.type === '性行为') {
+      document.getElementById('sexualActivityTimeInput').value = record.data.time || ''
+      document.getElementById('sexualActivityPartnerInput').value = record.data.partner || ''
+      document.getElementById('sexualActivityContraceptionSelect').value = record.data.contraception || 'unrecorded'
+      document.getElementById('sexualActivityProtectionSelect').value = record.data.protection || 'unrecorded'
+      if (userGender === 'female') document.getElementById(
+        'sexualActivityFemaleOrgasmSelect').value = record.data.femaleOrgasm || 'unrecorded'
+      if (userGender === 'male') document.getElementById(
+        'sexualActivityMaleOrgasmSelect').value = record.data.maleOrgasm || 'unrecorded'
+      document.getElementById('sexualActivityNotesTextarea').value = record.data.notes || ''
+    } else if (logScreenId === 'logMasturbationScreen' && record.type === '自慰') {
+      document.getElementById('masturbationTimeInput').value = record.data.time || ''
+      document.getElementById('masturbationNotesTextarea').value = record.data.notes || ''
+    } else if (logScreenId === 'logGeneralNoteScreen' && record.type === '笔记') {
+      document.getElementById('generalNoteContentTextarea').value = record.data.content || ''
+    }
+  }
+
+  function selectChoiceItems (gridId, values) {
+    const grid = document.getElementById(gridId)
+    if (!grid) return
+    const items = grid.querySelectorAll('.choice-item')
+    items.forEach(item => item.classList.remove('selected'))
+    if (Array.isArray(values)) {
+      values.forEach(val => {
+        const targetItem = Array.from(items).find(item => item.dataset.value === val)
+        if (targetItem) targetItem.classList.add('selected')
+      })
+    } else if (values) {
+      const targetItem = Array.from(items).find(item => item.dataset.value === values)
+      if (targetItem) targetItem.classList.add('selected')
+    }
+  }
+
+  function getSelectedChoiceItems (gridId, isMultiSelect = false) {
+    const grid = document.getElementById(gridId)
+    if (!grid) return isMultiSelect ? [] : null
+    const selectedItems = grid.querySelectorAll('.choice-item.selected')
+    if (isMultiSelect) {
+      return Array.from(selectedItems).map(item => item.dataset.value)
+    } else {
+      return selectedItems.length > 0 ? selectedItems[0].dataset.value : null
+    }
+  }
+
+  function generateCalendar (year, month) {
+    if (!calendarGridEl || !calendarMonthYearDisplayEl) return
+    calendarGridEl.innerHTML = ''
+    calendarMonthYearDisplayEl.textContent = `${year} 年 ${month + 1} 月`
+
+    // For the separate h3 in merged screen
+    const calendarMonthYearEl = document.getElementById('calendarMonthYearEl')
+    if (calendarMonthYearEl) calendarMonthYearEl.textContent = `${year} 年 ${month + 1} 月`
+
+    const firstDayOfMonth = new Date(year, month, 1).getDay() // 0 (Sun) - 6 (Sat)
+    const daysInMonth = new Date(year, month + 1, 0).getDate()
+    const headers = ['日', '一', '二', '三', '四', '五', '六']
+    headers.forEach(header => {
+      const headerEl = document.createElement('div')
+      headerEl.className = 'calendar-header'
+      headerEl.textContent = header
+      calendarGridEl.appendChild(headerEl)
+    })
+    for (let i = 0; i < firstDayOfMonth; i++) { calendarGridEl.appendChild(document.createElement('div')) }
+
+    for (let day = 1; day <= daysInMonth; day++) {
+      const dayCell = document.createElement('div')
+      dayCell.className = 'calendar-day'
+      const dayDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+      dayCell.innerHTML = `<span class="day-number">${day}</span><div class="event-icons" id="icons-${dayDateStr}"></div>`
+      if (dayDateStr === currentDateStr) dayCell.classList.add('today')
+
+      const records = dailyRecords[dayDateStr] || []
+      if (userGender === 'female') {
+        if (records.some(r => r.type === '月经')) dayCell.classList.add('period')
+        // Add fertile/ovulation: Mock logic, replace with actual calculation
+        if (day > 10 && day < 16) dayCell.classList.add('fertile')
+        if (day === 14) dayCell.classList.add('ovulation')
+
+      } else if (userGender === 'male') {
+        if (records.some(r => r.type === '遗精')) dayCell.classList.add('secretion')
+      }
+
+      dayCell.onclick = () => showDailySummaryOrRecordModal(dayDateStr)
+      calendarGridEl.appendChild(dayCell)
+      updateEventIconsForDate(dayDateStr)
+    }
+  }
+
+  function changeMonth (offset) {
+    calendarDate.setMonth(calendarDate.getMonth() + offset)
+    generateCalendar(calendarDate.getFullYear(), calendarDate.getMonth())
+  }
+
+  function updateEventIconsForDate (dateStr) {
+    const iconsContainer = document.getElementById(`icons-${dateStr}`)
+    if (!iconsContainer) return
+    iconsContainer.innerHTML = ''
+    const records = dailyRecords[dateStr] || []
+    const iconMap = {
+      '月经': 'fa-tint',
+      '遗精': 'fa-cloud',
+      '性行为': 'fa-heart',
+      '自慰': 'fa-hand-paper',
+      '笔记': 'fa-sticky-note',
+    }
+    const displayedIconTypes = new Set()
+    records.forEach(record => {
+      const iconClass = iconMap[record.type]
+      if (iconClass && !displayedIconTypes.has(record.type)) { // Check type to avoid duplicate icons of same type if multiple notes etc.
+        const iconEl = document.createElement('i')
+        iconEl.className = `fas ${iconClass}`
+        iconEl.title = record.type
+        iconsContainer.appendChild(iconEl)
+        displayedIconTypes.add(record.type)
+      }
+    })
+  }
+
+  function showDailySummaryOrRecordModal (dateStr) {
+    currentEditingDate = dateStr // Set this for potential "add new" from summary
+    const records = dailyRecords[dateStr] || []
+    if (records.length > 0) {
+      document.getElementById('dailySummaryTitleEl').textContent = `本日记录 (${dateStr})`
+      const summaryContentEl = document.getElementById('dailySummaryContentEl')
+      summaryContentEl.innerHTML = ''
+      records.forEach(rec => {
+        const itemEl = document.createElement('div')
+        itemEl.className = 'daily-summary-item'
+        const iconMap = {
+          '月经': 'fa-tint',
+          '遗精': 'fa-cloud',
+          '性行为': 'fa-heart',
+          '自慰': 'fa-hand-paper',
+          '笔记': 'fa-sticky-note',
+        }
+        const iconClass = iconMap[rec.type] || 'fa-question-circle'
+        let description = rec.data.notes || rec.data.symptoms?.[0] || rec.data.content || rec.type
+        if (rec.type === '月经' && rec.data.flow) description = `流量: ${rec.data.flow}`
+        if (rec.type === '性行为' && rec.data.time) description = `时间: ${rec.data.time}`
+
+        itemEl.innerHTML = `<span><i class="fas ${iconClass} icon"></i>${rec.type}: ${description.substring(0,
+          15)}${description.length > 15 ? '...' : ''}</span>
+                                    <span class="edit-btn" onclick="navigateToLogScreen('${getLogScreenForType(
+          rec.type)}', '${rec.id}')">编辑</span>`
+        summaryContentEl.appendChild(itemEl)
+      })
+      recordModalDateInputEl.value = dateStr // Ensure modal has correct date for "add another"
+      openModal('dailySummaryModalEl')
+    } else { openRecordTypeModal(dateStr) }
+  }
+
+  function addAnotherRecordFromSummary () {
+    closeModal('dailySummaryModalEl')
+    openRecordTypeModal(currentEditingDate || recordModalDateInputEl.value) // Use currentEditingDate from day click
+  }
+
+  function getLogScreenForType (recordType) {
+    if (recordType.includes('月经')) return 'logMenstrualScreen'
+    if (recordType.includes('遗精')) return 'logSecretionScreen'
+    if (recordType.includes('性行为')) return 'logSexualActivityScreen'
+    if (recordType.includes('自慰')) return 'logMasturbationScreen'
+    return 'logGeneralNoteScreen'
+  }
+
+  function generateUUID () { return 'id-' + Math.random().toString(36).substr(2, 9) }
+
+  function addOrUpdateRecord (dateStr, type, data, recordId = null) {
+    if (!dailyRecords[dateStr]) dailyRecords[dateStr] = []
+    if (recordId) {
+      const recordIndex = dailyRecords[dateStr].findIndex(r => r.id === recordId)
+      if (recordIndex > -1) {
+        dailyRecords[dateStr][recordIndex] = { ...dailyRecords[dateStr][recordIndex], type, data }
+        return true
+      }
+      return false
+    } else {
+      dailyRecords[dateStr].push({ id: generateUUID(), type, data })
+      return true
+    }
+  }
+
+  function updateTodaySummary () { // Was updateHomeScreenSummary
+    if (!homeSummaryEl) return
+
+    const recordsToday = dailyRecords[currentDateStr] || []
+    if (recordsToday.length > 0) {
+      homeSummaryEl.innerHTML = ''
+      recordsToday.slice(0, 3).forEach(rec => { // Show up to 3
+        const iconMap = {
+          '月经': 'fa-tint',
+          '遗精': 'fa-cloud',
+          '性行为': 'fa-heart',
+          '自慰': 'fa-hand-paper',
+          '笔记': 'fa-sticky-note',
+        }
+        const iconClass = iconMap[rec.type] || 'fa-question-circle'
+        let description = rec.data.notes || rec.data.symptoms?.[0] || rec.data.content || rec.type
+        if (rec.type === '月经' && rec.data.flow) description = `流量: ${rec.data.flow}`
+        if (rec.type === '性行为' && rec.data.time) description = `时间: ${rec.data.time}`
+
+        const p = document.createElement('p')
+        p.innerHTML = `<i class="fas ${iconClass} icon"></i> ${rec.type}: ${description.substring(0,
+          20)}${description.length > 20 ? '...' : ''}`
+        homeSummaryEl.appendChild(p)
+      })
+      if (recordsToday.length > 3) {
+        const pMore = document.createElement('p')
+        pMore.className = 'text-muted'
+        pMore.textContent = `还有 ${recordsToday.length - 3} 条其他记录...`
+        homeSummaryEl.appendChild(pMore)
+      }
+    } else {
+      homeSummaryEl.innerHTML = '<p class="text-muted">暂无今日记录。点击下方 "+" 添加。</p>'
+    }
+  }
+
+  function saveRecordAndGoBack () {
+    const logScreenId = currentScreenId
+    const recordDate = document.getElementById(`${logScreenId}DateInputEl`)?.value
+    if (!recordDate) {
+      alert('日期错误，无法保存！')
+      return
+    }
+
+    let recordType = '笔记'
+    let recordData = {}
+
+    if (logScreenId === 'logMenstrualScreen') {
+      recordType = '月经'
+      recordData = {
+        status: document.getElementById('menstrualStatusSelect').value,
+        flow: getSelectedChoiceItems('menstrualFlowGrid'),
+        symptoms: getSelectedChoiceItems('menstrualSymptomsGrid', true),
+        mood: getSelectedChoiceItems('menstrualMoodGrid'),
+        notes: document.getElementById('menstrualNotesTextarea').value,
+      }
+    } else if (logScreenId === 'logSecretionScreen') {
+      recordType = '遗精'
+      recordData = { notes: document.getElementById('secretionNotesTextarea').value }
+    } else if (logScreenId === 'logSexualActivityScreen') {
+      recordType = '性行为'
+      recordData = {
+        time: document.getElementById('sexualActivityTimeInput').value,
+        partner: document.getElementById('sexualActivityPartnerInput').value,
+        contraception: document.getElementById('sexualActivityContraceptionSelect').value,
+        protection: document.getElementById('sexualActivityProtectionSelect').value,
+        femaleOrgasm: userGender === 'female'
+          ? document.getElementById('sexualActivityFemaleOrgasmSelect').value
+          : null,
+        maleOrgasm: userGender === 'male' ? document.getElementById('sexualActivityMaleOrgasmSelect').value : null,
+        notes: document.getElementById('sexualActivityNotesTextarea').value,
+      }
+    } else if (logScreenId === 'logMasturbationScreen') {
+      recordType = '自慰'
+      recordData = {
+        time: document.getElementById('masturbationTimeInput').value,
+        notes: document.getElementById('masturbationNotesTextarea').value,
+      }
+    } else if (logScreenId === 'logGeneralNoteScreen') {
+      recordType = '笔记'
+      recordData = { content: document.getElementById('generalNoteContentTextarea').value }
+    }
+
+    const success = addOrUpdateRecord(recordDate, recordType, recordData, currentEditingRecordId)
+    if (success) {
+      // alert(currentEditingRecordId ? '记录已更新!' : '记录已保存!'); // Consider a less intrusive notification
+    } else if (currentEditingRecordId && !success) {
+      alert('错误：找不到要更新的记录。将作为新纪录保存。')
+      addOrUpdateRecord(recordDate, recordType, recordData, null)
+    }
+    currentEditingRecordId = null
+
+    // Update calendarDate if the recordDate is in a different month/year
+    const savedDateObj = new Date(recordDate + 'T00:00:00') // Ensure correct date parsing
+    if (savedDateObj.getFullYear() !== calendarDate.getFullYear() || savedDateObj.getMonth() !==
+      calendarDate.getMonth()) {
+      calendarDate = savedDateObj
+    }
+    // generateCalendar will be called by showScreen if navigating to homeCalendarScreen
+    // If recordDate is today, update summary
+    if (recordDate === currentDateStr) updateTodaySummary()
+
+    // Determine where to go back. If previous was a log screen or calendar itself, go to merged home/calendar.
+    if (previousScreenId.startsWith('log') || previousScreenId === 'calendarScreen' || previousScreenId ===
+      'homeCalendarScreen' || !document.getElementById(previousScreenId)) {
+      showScreen('homeCalendarScreen')
+    } else {
+      showScreen(previousScreenId)
+    }
+  }
+
+  function addInitialMockRecords () {
+    const today = new Date()
+    const d1 = new Date(today)
+    d1.setDate(today.getDate() - 1)
+    const date1 = d1.toISOString().slice(0, 10)
+    const d2 = new Date(today)
+    d2.setDate(today.getDate() - 3)
+    const date2 = d2.toISOString().slice(0, 10)
+    const d3 = new Date(today)
+    d3.setDate(today.getDate() - 5)
+    const date3 = d3.toISOString().slice(0, 10)
+
+    if (userGender === 'female') {
+      addOrUpdateRecord(date1, '月经',
+        { status: '月经期', flow: '中等', symptoms: ['腹痛', '疲劳'], mood: '烦躁', notes: '第一天，有点不舒服' })
+      addOrUpdateRecord(date2, '性行为',
+        { time: '21:30', contraception: 'condom', protection: 'yes_condom', femaleOrgasm: 'yes', notes: '感觉不错' })
+      addOrUpdateRecord(date3, '笔记', { content: '开始新的健身计划' })
+    } else if (userGender === 'male') {
+      addOrUpdateRecord(date1, '遗精', { notes: '做了个奇怪的梦' })
+      addOrUpdateRecord(date2, '性行为',
+        { time: '23:00', contraception: 'condom', protection: 'yes_condom', maleOrgasm: 'yes', notes: '和伴侣度过' })
+      addOrUpdateRecord(date3, '自慰', { time: '08:00', notes: '晨间' })
+    }
+    // Add a record for today for demo purposes if current date is used in summary
+    if (currentDateStr === date1 || currentDateStr === date2 || currentDateStr ===
+      date3) { /* already has data */ } else if (userGender === 'female') {
+      addOrUpdateRecord(currentDateStr, '笔记', { content: '今天感觉良好' })
+    } else if (userGender === 'male') {
+      addOrUpdateRecord(currentDateStr, '笔记', { content: '完成了健身目标' })
+    }
+  }
+
+  function updateBottomNavActiveState (screenId) {
+    document.querySelectorAll('.bottom-nav').forEach(nav => {
+      nav.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'))
+      let targetIconClass = ''
+      if (screenId.includes('homeCalendar')) targetIconClass = 'fa-home'
+      // else if (screenId.includes('calendar')) targetIconClass = 'fa-calendar-alt'; // Obsolete
+      else if (screenId.includes('stats')) {
+        targetIconClass = userGender === 'female' ? 'fa-chart-line' : (userGender === 'male'
+          ? 'fa-chart-bar'
+          : 'fa-chart-line') // Default to line if no gender
+      } else if (screenId.includes('settings')) targetIconClass = 'fa-cog'
+
+      const activeNavItem = nav.querySelector(`.${targetIconClass}`)?.closest('.nav-item')
+      if (activeNavItem) activeNavItem.classList.add('active')
+    })
+  }
+
+  function initializeChoiceItemClicks () {
+    document.querySelectorAll('.choice-grid').forEach(grid => {
+      const isMultiSelect = grid.id.toLowerCase().includes('symptoms')
+      grid.querySelectorAll('.choice-item').forEach(item => {
+        item.addEventListener('click', () => {
+          if (!isMultiSelect) {
+            grid.querySelectorAll('.choice-item').forEach(el => el.classList.remove('selected'))
+          }
+          item.classList.toggle('selected')
+        })
+      })
+    })
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    currentDateStr = new Date().toISOString().slice(0, 10)
+    calendarDate = new Date() // Initialize calendarDate
+
+    initializeChoiceItemClicks()
+    applyThemeAndGenderSpecificUI(null) // Initial neutral state
+
+    showScreen('splashScreen')
+    setTimeout(() => {
+      if (userGender) {
+        applyThemeAndGenderSpecificUI(userGender)
+        showScreen('homeCalendarScreen')
+      } else {
+        showScreen('loginScreen')
+      }
+    }, 1500)
+  })
+</script>
+</body>
+</html>
