@@ -5,12 +5,8 @@ const Calendar = memo(() => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
-  const [pickerYear, setPickerYear] = useState<number>(
-    currentDate.getFullYear(),
-  );
-  const [pickerMonth, setPickerMonth] = useState<number>(
-    currentDate.getMonth(),
-  );
+  const [pickerYear, setPickerYear] = useState<number>(currentDate.getFullYear());
+  const [pickerMonth, setPickerMonth] = useState<number>(currentDate.getMonth());
 
   const yearListRef = useRef<FlatList<number> | null>(null);
   const monthListRef = useRef<FlatList<string> | null>(null);
@@ -66,6 +62,7 @@ const Calendar = memo(() => {
 
     return [...prevMonthDays, ...currentMonthDays, ...nextMonthDays];
   };
+
   const handleDateSelect = (date: Date) => {
     const dateString = date.toLocaleDateString('zh-CN');
 
@@ -108,11 +105,7 @@ const Calendar = memo(() => {
         }, 150);
       }
 
-      if (
-        monthIndex >= 0 &&
-        monthIndex < months.length &&
-        monthListRef.current
-      ) {
+      if (monthIndex >= 0 && monthIndex < months.length && monthListRef.current) {
         setTimeout(() => {
           monthListRef.current?.scrollToIndex({
             index: monthIndex,
@@ -122,7 +115,7 @@ const Calendar = memo(() => {
         }, 150);
       }
     }
-  }, [showDatePicker, pickerYear, pickerMonth]);
+  }, [showDatePicker, pickerYear, pickerMonth, years, months]);
 
   return (
     <View className={'p-4'}>
@@ -131,8 +124,13 @@ const Calendar = memo(() => {
         <TouchableOpacity onPress={() => handleMonthChange(-1)}>
           <Text className={'px-4 text-2xl text-themePurple-700'}>←</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handlePickerOpen}>
-          <Text className={'text-2xl font-bold text-themePurple-700'}>
+        <TouchableOpacity
+          onPress={handlePickerOpen}
+          className={
+            'flex-row items-center gap-2 rounded-lg bg-themePurple-100 px-4 py-2'
+          }
+        >
+          <Text className={'text-lg font-bold text-themePurple-700'}>
             {currentDate.toLocaleDateString('zh-CN', {
               month: 'long',
               year: 'numeric',
@@ -169,16 +167,20 @@ const Calendar = memo(() => {
               <TouchableOpacity
                 className={`my-0.5 h-10 w-10 items-center justify-center rounded-lg ${
                   isCurrentMonth ? 'border border-gray-200' : 'border-0'
-                } ${
-                  isToday ? 'bg-themePurple-200' : ''
-                } ${isSelected ? 'bg-themePurple' : ''}`}
+                } ${isToday ? 'bg-themePurple-200' : ''} ${
+                  isSelected ? 'bg-themePurple' : ''
+                }`}
                 onPress={() => handleDateSelect(date)}
                 disabled={!isCurrentMonth}
               >
                 <Text
-                  className={`${isToday ? 'text-white' : ''} ${
-                    isCurrentMonth ? 'text-gray-600' : 'text-gray-300'
-                  } text-lg`}
+                  className={`text-lg ${
+                    isSelected
+                      ? 'font-bold text-white'
+                      : isCurrentMonth
+                      ? 'text-gray-600'
+                      : 'text-gray-300'
+                  }`}
                 >
                   {date.getDate()}
                 </Text>
@@ -190,129 +192,153 @@ const Calendar = memo(() => {
 
       {/* 日期选择器 */}
       <Modal
-        animationType={'slide'}
+        animationType={'fade'}
         transparent={true}
         visible={showDatePicker}
         onRequestClose={() => setShowDatePicker(false)}
       >
-        <View className={'flex-1 items-center justify-center'}>
-          <View className={'w-4/5 rounded-xl bg-warmNeutral-50 p-5 shadow-lg'}>
-            <Text
-              className={
-                'mb-4 text-center text-xl font-bold text-themePurple-700'
-              }
-            >
-              选择日期
-            </Text>
-
-            <View className={'mb-4 flex-row justify-between'}>
-              {/* 年份选择 */}
-              <View className={'h-60 w-1/2'}>
-                <Text className={'mb-1 text-center text-sm text-gray-600'}>
-                  年份
-                </Text>
-                <FlatList
-                  ref={yearListRef}
-                  data={years}
-                  keyExtractor={(item) => item.toString()}
-                  renderItem={({ item }: { item: number }) => (
-                    <TouchableOpacity
-                      key={item}
-                      className={`py-2 ${
-                        pickerYear === item ? 'bg-themePurple-100' : ''
-                      }`}
-                      onPress={() => setPickerYear(item)}
-                    >
-                      <Text
-                        className={`text-center ${
-                          pickerYear === item
-                            ? 'font-bold text-themePurple-700'
-                            : 'text-gray-700'
-                        }`}
-                      >
-                        {item}
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                  showsVerticalScrollIndicator={false}
-                  getItemLayout={(
-                    data: ArrayLike<number> | null | undefined,
-                    index: number,
-                  ) => ({
-                    length: pickerItemHeight,
-                    offset: pickerItemHeight * index,
-                    index,
-                  })}
-                  className={
-                    'rounded-lg rounded-r-none border border-r-0 border-warmNeutral-300 bg-white'
-                  }
-                />
-              </View>
-
-              {/* 月份选择 */}
-              <View className={'h-60 w-1/2'}>
-                <Text className={'mb-1 text-center text-sm text-gray-600'}>
-                  月份
-                </Text>
-                <FlatList
-                  ref={monthListRef}
-                  data={months}
-                  keyExtractor={(item, index) => item + index.toString()}
-                  renderItem={({
-                    item,
-                    index,
-                  }: {
-                    item: string;
-                    index: number;
-                  }) => (
-                    <TouchableOpacity
-                      key={item}
-                      className={`py-2 ${
-                        pickerMonth === index ? 'bg-themePurple-100' : ''
-                      }`}
-                      onPress={() => setPickerMonth(index)}
-                    >
-                      <Text
-                        className={`text-center ${
-                          pickerMonth === index
-                            ? 'font-bold text-themePurple-700'
-                            : 'text-gray-700'
-                        }`}
-                      >
-                        {item} 月
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                  showsVerticalScrollIndicator={false}
-                  getItemLayout={(
-                    data: ArrayLike<string> | null | undefined,
-                    index: number,
-                  ) => ({
-                    length: pickerItemHeight,
-                    offset: pickerItemHeight * index,
-                    index,
-                  })}
-                  className={
-                    'rounded-lg rounded-l-none border border-l-0 border-warmNeutral-300 bg-white'
-                  }
-                />
-              </View>
+        <View className={'flex-1 items-center justify-center bg-black/30'}>
+          <View
+            className={
+              'w-4/5 overflow-hidden rounded-2xl bg-warmNeutral-50 shadow-lg'
+            }
+          >
+            <View className={'border-b border-warmNeutral-200 bg-white p-4'}>
+              <Text
+                className={
+                  'text-center text-xl font-bold text-themePurple-700'
+                }
+              >
+                选择日期
+              </Text>
             </View>
 
-            {/* 按钮 */}
-            <View className={'mt-2 flex-row justify-end'}>
-              <TouchableOpacity
-                className={'mr-3 rounded-lg bg-gray-300 px-5 py-2.5'}
-                onPress={() => setShowDatePicker(false)}
-              >
-                <Text className={'font-semibold text-gray-700'}>取消</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                className={'rounded-lg bg-themePurple-500 px-5 py-2.5'}
-                onPress={handlePickerConfirm}
-              >
-                <Text className={'font-semibold text-white'}>确定</Text>
-              </TouchableOpacity>
+            <View className={'p-4'}>
+              <View className={'mb-4 flex-row justify-between'}>
+                {/* 年份选择 */}
+                <View className={'h-60 w-1/2'}>
+                  <Text
+                    className={
+                      'mb-2 text-center text-sm font-medium text-gray-600'
+                    }
+                  >
+                    年份
+                  </Text>
+                  <FlatList
+                    ref={yearListRef}
+                    data={years}
+                    keyExtractor={(item) => item.toString()}
+                    renderItem={({ item }: { item: number }) => (
+                      <TouchableOpacity
+                        key={item}
+                        className={`py-2 ${
+                          pickerYear === item
+                            ? 'rounded-lg bg-themePurple-100'
+                            : ''
+                        }`}
+                        onPress={() => setPickerYear(item)}
+                      >
+                        <Text
+                          className={`text-center ${
+                            pickerYear === item
+                              ? 'font-bold text-themePurple-700'
+                              : 'text-gray-700'
+                          }`}
+                        >
+                          {item}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                    showsVerticalScrollIndicator={false}
+                    getItemLayout={(
+                      data: ArrayLike<number> | null | undefined,
+                      index: number,
+                    ) => ({
+                      length: pickerItemHeight,
+                      offset: pickerItemHeight * index,
+                      index,
+                    })}
+                    className={
+                      'rounded-lg border border-warmNeutral-200 bg-white px-2'
+                    }
+                  />
+                </View>
+
+                {/* 月份选择 */}
+                <View className={'h-60 w-1/2'}>
+                  <Text
+                    className={
+                      'mb-2 text-center text-sm font-medium text-gray-600'
+                    }
+                  >
+                    月份
+                  </Text>
+                  <FlatList
+                    ref={monthListRef}
+                    data={months}
+                    keyExtractor={(item, index) => item + index.toString()}
+                    renderItem={({
+                      item,
+                      index,
+                    }: {
+                      item: string;
+                      index: number;
+                    }) => (
+                      <TouchableOpacity
+                        key={item}
+                        className={`py-2 ${
+                          pickerMonth === index
+                            ? 'rounded-lg bg-themePurple-100'
+                            : ''
+                        }`}
+                        onPress={() => setPickerMonth(index)}
+                      >
+                        <Text
+                          className={`text-center ${
+                            pickerMonth === index
+                              ? 'font-bold text-themePurple-700'
+                              : 'text-gray-700'
+                          }`}
+                        >
+                          {item} 月
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                    showsVerticalScrollIndicator={false}
+                    getItemLayout={(
+                      data: ArrayLike<string> | null | undefined,
+                      index: number,
+                    ) => ({
+                      length: pickerItemHeight,
+                      offset: pickerItemHeight * index,
+                      index,
+                    })}
+                    className={
+                      'rounded-lg border border-warmNeutral-200 bg-white px-2'
+                    }
+                  />
+                </View>
+              </View>
+
+              {/* 按钮 */}
+              <View className={'mt-2 flex-row justify-end gap-3'}>
+                <TouchableOpacity
+                  className={
+                    'rounded-lg bg-gray-100 px-5 py-2.5 active:bg-gray-200'
+                  }
+                  onPress={() => setShowDatePicker(false)}
+                >
+                  <Text className={'font-semibold text-gray-700'}>取消</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  className={
+                    'rounded-lg bg-themePurple px-5 py-2.5 active:bg-themePurple-600'
+                  }
+                  onPress={handlePickerConfirm}
+                >
+                  <Text className={'font-semibold text-white'}>确定</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
         </View>
