@@ -5,8 +5,12 @@ const Calendar = memo(() => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
-  const [pickerYear, setPickerYear] = useState<number>(currentDate.getFullYear());
-  const [pickerMonth, setPickerMonth] = useState<number>(currentDate.getMonth());
+  const [pickerYear, setPickerYear] = useState<number>(
+    currentDate.getFullYear(),
+  );
+  const [pickerMonth, setPickerMonth] = useState<number>(
+    currentDate.getMonth(),
+  );
 
   const yearListRef = useRef<FlatList<number> | null>(null);
   const monthListRef = useRef<FlatList<string> | null>(null);
@@ -28,7 +32,18 @@ const Calendar = memo(() => {
     () => Array.from({ length: 101 }, (_, i) => currentYear - 50 + i),
     [currentYear],
   );
-  const pickerItemHeight = 33.2;
+  const pickerItemHeight = 36.7;
+
+  // 模拟健康数据 - 实际使用时从props或状态管理获取
+  const healthData = useMemo(
+    () => ({
+      menstrualDays: ['2024/6/1', '2024/6/2', '2024/6/3', '2024/6/4'], // 月经期
+      fertileDays: ['2024/6/12', '2024/6/13', '2024/6/14', '2024/6/15'], // 易孕期
+      ovulationDay: '2024/6/14', // 排卵日
+      recordedDays: ['2024/6/5', '2024/6/10', '2024/6/20'], // 有记录的日子
+    }),
+    [],
+  );
 
   const generateMonth = (date: Date) => {
     const year = date.getFullYear();
@@ -61,6 +76,16 @@ const Calendar = memo(() => {
     );
 
     return [...prevMonthDays, ...currentMonthDays, ...nextMonthDays];
+  };
+
+  const getDateType = (date: Date) => {
+    const dateString = date.toLocaleDateString('zh-CN');
+
+    if (healthData.ovulationDay === dateString) return 'ovulation';
+    if (healthData.menstrualDays.includes(dateString)) return 'menstrual';
+    if (healthData.fertileDays.includes(dateString)) return 'fertile';
+    if (healthData.recordedDays.includes(dateString)) return 'recorded';
+    return 'normal';
   };
 
   const handleDateSelect = (date: Date) => {
@@ -105,7 +130,11 @@ const Calendar = memo(() => {
         }, 150);
       }
 
-      if (monthIndex >= 0 && monthIndex < months.length && monthListRef.current) {
+      if (
+        monthIndex >= 0 &&
+        monthIndex < months.length &&
+        monthListRef.current
+      ) {
         setTimeout(() => {
           monthListRef.current?.scrollToIndex({
             index: monthIndex,
@@ -118,36 +147,48 @@ const Calendar = memo(() => {
   }, [showDatePicker, pickerYear, pickerMonth, years, months]);
 
   return (
-    <View className={'p-4'}>
-      {/* 月份切换头 */}
+    <View className={'p-2'}>
+      {/* 月份切换头 - 使用更柔和的设计 */}
       <View className={'mb-4 flex-row items-center justify-between'}>
-        <TouchableOpacity onPress={() => handleMonthChange(-1)}>
-          <Text className={'px-4 text-2xl text-themePurple-700'}>←</Text>
+        <TouchableOpacity
+          onPress={() => handleMonthChange(-1)}
+          className={
+            'rounded-full bg-neutral-200/60 p-2 active:bg-neutral-300/60'
+          }
+        >
+          <Text className={'text-primary-600 text-xl font-medium'}>←</Text>
         </TouchableOpacity>
+
         <TouchableOpacity
           onPress={handlePickerOpen}
           className={
-            'flex-row items-center gap-2 rounded-lg bg-themePurple-100 px-4 py-2'
+            'bg-primary-100/80 active:bg-primary-200/80 flex-row items-center gap-2 rounded-xl px-6 py-3'
           }
         >
-          <Text className={'text-lg font-bold text-themePurple-700'}>
+          <Text className={'text-primary-700 text-lg font-semibold'}>
             {currentDate.toLocaleDateString('zh-CN', {
               month: 'long',
               year: 'numeric',
             })}
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleMonthChange(1)}>
-          <Text className={'px-4 text-2xl text-themePurple-700'}>→</Text>
+
+        <TouchableOpacity
+          onPress={() => handleMonthChange(1)}
+          className={
+            'rounded-full bg-neutral-200/60 p-2 active:bg-neutral-300/60'
+          }
+        >
+          <Text className={'text-primary-600 text-xl font-medium'}>→</Text>
         </TouchableOpacity>
       </View>
 
-      {/* 星期标题 */}
-      <View className={'mb-2 flex-row justify-around'}>
+      {/* 星期标题 - 使用更柔和的颜色 */}
+      <View className={'mb-3 flex-row justify-around'}>
         {weekDays.map((day) => (
           <View key={day} className={'w-[14.28%]'}>
             <Text
-              className={'w-10 text-center text-lg font-semibold text-gray-500'}
+              className={'w-10 text-center text-base font-medium text-gray-500'}
             >
               {day}
             </Text>
@@ -155,71 +196,141 @@ const Calendar = memo(() => {
         ))}
       </View>
 
-      {/* 日期网格 */}
+      {/* 日期网格 - 增强健康数据可视化 */}
       <View className={'flex-row flex-wrap justify-around'}>
         {generateMonth(currentDate).map((date, index) => {
           const isCurrentMonth = date.getMonth() === currentDate.getMonth();
           const isToday = date.toLocaleDateString('zh-CN') === today;
           const isSelected = date.toLocaleDateString('zh-CN') === selectedDate;
+          const dateType = getDateType(date);
+
+          // 根据日期类型设置样式
+          let dateStyle =
+            'my-0.5 h-11 w-11 items-center justify-center rounded-xl ';
+          let textStyle = 'text-base ';
+
+          if (!isCurrentMonth) {
+            dateStyle += 'border-0 ';
+            textStyle += 'text-gray-300 ';
+          } else {
+            switch (dateType) {
+              case 'menstrual':
+                dateStyle += isSelected
+                  ? 'bg-health-cycle border-2 border-health-cycle/60 '
+                  : 'bg-health-cycle/30 border border-health-cycle/40 ';
+                textStyle += isSelected
+                  ? 'text-white font-bold '
+                  : 'text-health-cycle font-medium ';
+                break;
+              case 'ovulation':
+                dateStyle += isSelected
+                  ? 'bg-primary-500 border-2 border-primary-400 '
+                  : 'bg-primary-200 border-2 border-primary-300 ';
+                textStyle += isSelected
+                  ? 'text-white font-bold '
+                  : 'text-primary-700 font-semibold ';
+                break;
+              case 'fertile':
+                dateStyle += isSelected
+                  ? 'bg-health-fertile border-2 border-health-fertile/60 '
+                  : 'bg-health-fertile/40 border border-health-fertile/50 ';
+                textStyle += isSelected
+                  ? 'text-white font-bold '
+                  : 'text-green-700 font-medium ';
+                break;
+              case 'recorded':
+                dateStyle += isSelected
+                  ? 'bg-secondary-400 border-2 border-secondary-300 '
+                  : 'bg-secondary-100 border border-secondary-200 ';
+                textStyle += isSelected
+                  ? 'text-white font-bold '
+                  : 'text-secondary-700 font-medium ';
+                break;
+              default:
+                if (isToday) {
+                  dateStyle += isSelected
+                    ? 'bg-primary-400 border-2 border-primary-300 '
+                    : 'bg-primary-100 border-2 border-primary-200 ';
+                  textStyle += isSelected
+                    ? 'text-white font-bold '
+                    : 'text-primary-700 font-semibold ';
+                } else {
+                  dateStyle += isSelected
+                    ? 'bg-primary-400 border-2 border-primary-300 '
+                    : 'border border-neutral-200 ';
+                  textStyle += isSelected
+                    ? 'text-white font-bold '
+                    : 'text-gray-600 ';
+                }
+            }
+          }
 
           return (
             <View key={index} className={'w-[14.28%]'}>
               <TouchableOpacity
-                className={`my-0.5 h-10 w-10 items-center justify-center rounded-lg ${
-                  isCurrentMonth ? 'border border-gray-200' : 'border-0'
-                } ${isToday ? 'bg-themePurple-200' : ''} ${
-                  isSelected ? 'bg-themePurple' : ''
-                }`}
+                className={dateStyle}
                 onPress={() => handleDateSelect(date)}
                 disabled={!isCurrentMonth}
               >
-                <Text
-                  className={`text-lg ${
-                    isSelected
-                      ? 'font-bold text-white'
-                      : isCurrentMonth
-                      ? 'text-gray-600'
-                      : 'text-gray-300'
-                  }`}
-                >
-                  {date.getDate()}
-                </Text>
+                <Text className={textStyle}>{date.getDate()}</Text>
               </TouchableOpacity>
             </View>
           );
         })}
       </View>
 
-      {/* 日期选择器 */}
+      {/* 图例说明 */}
+      <View className={'mt-4 flex-row flex-wrap justify-center gap-3'}>
+        <View className={'flex-row items-center gap-1'}>
+          <View className={'bg-health-cycle/60 h-3 w-3 rounded-full'} />
+          <Text className={'text-xs text-gray-600'}>月经期</Text>
+        </View>
+        <View className={'flex-row items-center gap-1'}>
+          <View className={'bg-health-fertile/60 h-3 w-3 rounded-full'} />
+          <Text className={'text-xs text-gray-600'}>易孕期</Text>
+        </View>
+        <View className={'flex-row items-center gap-1'}>
+          <View className={'bg-primary-300 h-3 w-3 rounded-full'} />
+          <Text className={'text-xs text-gray-600'}>排卵日</Text>
+        </View>
+        <View className={'flex-row items-center gap-1'}>
+          <View className={'bg-secondary-200 h-3 w-3 rounded-full'} />
+          <Text className={'text-xs text-gray-600'}>有记录</Text>
+        </View>
+      </View>
+
+      {/* 日期选择器模态框 - 使用新配色 */}
       <Modal
         animationType={'fade'}
         transparent={true}
         visible={showDatePicker}
         onRequestClose={() => setShowDatePicker(false)}
       >
-        <View className={'flex-1 items-center justify-center bg-black/30'}>
+        <View className={'flex-1 items-center justify-center bg-black/40'}>
           <View
             className={
-              'w-4/5 overflow-hidden rounded-2xl bg-warmNeutral-50 shadow-lg'
+              'w-4/5 overflow-hidden rounded-2xl bg-neutral-50 shadow-2xl'
             }
           >
-            <View className={'border-b border-warmNeutral-200 bg-white p-4'}>
+            <View
+              className={
+                'bg-gradient-primary border-b border-neutral-200/80 p-5'
+              }
+            >
               <Text
-                className={
-                  'text-center text-xl font-bold text-themePurple-700'
-                }
+                className={'text-primary-700 text-center text-xl font-semibold'}
               >
                 选择日期
               </Text>
             </View>
 
-            <View className={'p-4'}>
-              <View className={'mb-4 flex-row justify-between'}>
+            <View className={'p-5'}>
+              <View className={'mb-4 flex-row justify-between gap-3'}>
                 {/* 年份选择 */}
-                <View className={'h-60 w-1/2'}>
+                <View className={'h-60 flex-1'}>
                   <Text
                     className={
-                      'mb-2 text-center text-sm font-medium text-gray-600'
+                      'mb-3 text-center text-sm font-medium text-gray-600'
                     }
                   >
                     年份
@@ -231,17 +342,17 @@ const Calendar = memo(() => {
                     renderItem={({ item }: { item: number }) => (
                       <TouchableOpacity
                         key={item}
-                        className={`py-2 ${
+                        className={`mx-1 rounded-lg py-2.5 ${
                           pickerYear === item
-                            ? 'rounded-lg bg-themePurple-100'
-                            : ''
+                            ? 'bg-primary-100'
+                            : 'active:bg-neutral-100'
                         }`}
                         onPress={() => setPickerYear(item)}
                       >
                         <Text
                           className={`text-center ${
                             pickerYear === item
-                              ? 'font-bold text-themePurple-700'
+                              ? 'text-primary-700 font-semibold'
                               : 'text-gray-700'
                           }`}
                         >
@@ -259,16 +370,16 @@ const Calendar = memo(() => {
                       index,
                     })}
                     className={
-                      'rounded-lg border border-warmNeutral-200 bg-white px-2'
+                      'rounded-xl border border-neutral-200/80 bg-white px-2'
                     }
                   />
                 </View>
 
                 {/* 月份选择 */}
-                <View className={'h-60 w-1/2'}>
+                <View className={'h-60 flex-1'}>
                   <Text
                     className={
-                      'mb-2 text-center text-sm font-medium text-gray-600'
+                      'mb-3 text-center text-sm font-medium text-gray-600'
                     }
                   >
                     月份
@@ -286,17 +397,17 @@ const Calendar = memo(() => {
                     }) => (
                       <TouchableOpacity
                         key={item}
-                        className={`py-2 ${
+                        className={`mx-1 rounded-lg py-2.5 ${
                           pickerMonth === index
-                            ? 'rounded-lg bg-themePurple-100'
-                            : ''
+                            ? 'bg-primary-100'
+                            : 'active:bg-neutral-100'
                         }`}
                         onPress={() => setPickerMonth(index)}
                       >
                         <Text
                           className={`text-center ${
                             pickerMonth === index
-                              ? 'font-bold text-themePurple-700'
+                              ? 'text-primary-700 font-semibold'
                               : 'text-gray-700'
                           }`}
                         >
@@ -314,29 +425,29 @@ const Calendar = memo(() => {
                       index,
                     })}
                     className={
-                      'rounded-lg border border-warmNeutral-200 bg-white px-2'
+                      'rounded-xl border border-neutral-200/80 bg-white px-2'
                     }
                   />
                 </View>
               </View>
 
               {/* 按钮 */}
-              <View className={'mt-2 flex-row justify-end gap-3'}>
+              <View className={'mt-4 flex-row justify-end gap-3'}>
                 <TouchableOpacity
                   className={
-                    'rounded-lg bg-gray-100 px-5 py-2.5 active:bg-gray-200'
+                    'rounded-xl bg-neutral-200 px-6 py-3 active:bg-neutral-300'
                   }
                   onPress={() => setShowDatePicker(false)}
                 >
-                  <Text className={'font-semibold text-gray-700'}>取消</Text>
+                  <Text className={'font-medium text-gray-700'}>取消</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   className={
-                    'rounded-lg bg-themePurple px-5 py-2.5 active:bg-themePurple-600'
+                    'bg-primary-400 active:bg-primary-500 rounded-xl px-6 py-3'
                   }
                   onPress={handlePickerConfirm}
                 >
-                  <Text className={'font-semibold text-white'}>确定</Text>
+                  <Text className={'font-medium text-white'}>确定</Text>
                 </TouchableOpacity>
               </View>
             </View>
