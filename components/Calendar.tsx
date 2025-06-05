@@ -1,5 +1,6 @@
 import { memo, useEffect, useMemo, useRef, useState } from 'react';
 import { FlatList, Modal, Text, TouchableOpacity, View } from 'react-native';
+import { GradientBackground } from '@/components/GradientBackground';
 
 const Calendar = memo(() => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
@@ -153,19 +154,19 @@ const Calendar = memo(() => {
         <TouchableOpacity
           onPress={() => handleMonthChange(-1)}
           className={
-            'rounded-full bg-neutral-200/60 p-2 active:bg-neutral-300/60'
+            'rounded-xl bg-neutral-100/60 p-2 active:bg-neutral-200/60'
           }
         >
-          <Text className={'text-primary-600 text-xl font-medium'}>←</Text>
+          <Text className={'text-xl font-medium text-primary-600'}>←</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           onPress={handlePickerOpen}
           className={
-            'bg-primary-100/80 active:bg-primary-200/80 flex-row items-center gap-2 rounded-xl px-6 py-3'
+            'flex-row items-center gap-2 rounded-xl bg-primary-100/80 px-6 py-3 active:bg-primary-200/80'
           }
         >
-          <Text className={'text-primary-700 text-lg font-semibold'}>
+          <Text className={'text-lg font-semibold text-primary-700'}>
             {currentDate.toLocaleDateString('zh-CN', {
               month: 'long',
               year: 'numeric',
@@ -176,23 +177,22 @@ const Calendar = memo(() => {
         <TouchableOpacity
           onPress={() => handleMonthChange(1)}
           className={
-            'rounded-full bg-neutral-200/60 p-2 active:bg-neutral-300/60'
+            'rounded-xl bg-neutral-100/60 p-2 active:bg-neutral-200/60'
           }
         >
-          <Text className={'text-primary-600 text-xl font-medium'}>→</Text>
+          <Text className={'text-xl font-medium text-primary-600'}>→</Text>
         </TouchableOpacity>
       </View>
 
       {/* 星期标题 - 使用更柔和的颜色 */}
       <View className={'mb-3 flex-row justify-around'}>
         {weekDays.map((day) => (
-          <View key={day} className={'w-[14.28%]'}>
-            <Text
-              className={'w-10 text-center text-base font-medium text-gray-500'}
-            >
-              {day}
-            </Text>
-          </View>
+          <Text
+            key={day}
+            className={'text-center text-base font-medium text-gray-500'}
+          >
+            {day}
+          </Text>
         ))}
       </View>
 
@@ -266,15 +266,14 @@ const Calendar = memo(() => {
           }
 
           return (
-            <View key={index} className={'w-[14.28%]'}>
-              <TouchableOpacity
-                className={dateStyle}
-                onPress={() => handleDateSelect(date)}
-                disabled={!isCurrentMonth}
-              >
-                <Text className={textStyle}>{date.getDate()}</Text>
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+              key={index}
+              className={dateStyle}
+              onPress={() => handleDateSelect(date)}
+              disabled={!isCurrentMonth}
+            >
+              <Text className={textStyle}>{date.getDate()}</Text>
+            </TouchableOpacity>
           );
         })}
       </View>
@@ -282,19 +281,19 @@ const Calendar = memo(() => {
       {/* 图例说明 */}
       <View className={'mt-4 flex-row flex-wrap justify-center gap-3'}>
         <View className={'flex-row items-center gap-1'}>
-          <View className={'bg-health-cycle/60 h-3 w-3 rounded-full'} />
+          <View className={'h-3 w-3 rounded-full bg-health-cycle/60'} />
           <Text className={'text-xs text-gray-600'}>月经期</Text>
         </View>
         <View className={'flex-row items-center gap-1'}>
-          <View className={'bg-health-fertile/60 h-3 w-3 rounded-full'} />
+          <View className={'h-3 w-3 rounded-full bg-health-fertile/60'} />
           <Text className={'text-xs text-gray-600'}>易孕期</Text>
         </View>
         <View className={'flex-row items-center gap-1'}>
-          <View className={'bg-primary-300 h-3 w-3 rounded-full'} />
+          <View className={'h-3 w-3 rounded-full bg-primary-300'} />
           <Text className={'text-xs text-gray-600'}>排卵日</Text>
         </View>
         <View className={'flex-row items-center gap-1'}>
-          <View className={'bg-secondary-200 h-3 w-3 rounded-full'} />
+          <View className={'h-3 w-3 rounded-full bg-secondary-200'} />
           <Text className={'text-xs text-gray-600'}>有记录</Text>
         </View>
       </View>
@@ -312,17 +311,16 @@ const Calendar = memo(() => {
               'w-4/5 overflow-hidden rounded-2xl bg-neutral-50 shadow-2xl'
             }
           >
-            <View
-              className={
-                'bg-gradient-primary border-b border-neutral-200/80 p-5'
-              }
+            <GradientBackground
+              type={'primary'}
+              className={'border-b border-neutral-200/80 p-5'}
             >
               <Text
-                className={'text-primary-700 text-center text-xl font-semibold'}
+                className={'text-center text-xl font-semibold text-primary-700'}
               >
                 选择日期
               </Text>
-            </View>
+            </GradientBackground>
 
             <View className={'p-5'}>
               <View className={'mb-4 flex-row justify-between gap-3'}>
@@ -352,7 +350,7 @@ const Calendar = memo(() => {
                         <Text
                           className={`text-center ${
                             pickerYear === item
-                              ? 'text-primary-700 font-semibold'
+                              ? 'font-semibold text-primary-700'
                               : 'text-gray-700'
                           }`}
                         >
@@ -407,7 +405,7 @@ const Calendar = memo(() => {
                         <Text
                           className={`text-center ${
                             pickerMonth === index
-                              ? 'text-primary-700 font-semibold'
+                              ? 'font-semibold text-primary-700'
                               : 'text-gray-700'
                           }`}
                         >
@@ -443,7 +441,7 @@ const Calendar = memo(() => {
                 </TouchableOpacity>
                 <TouchableOpacity
                   className={
-                    'bg-primary-400 active:bg-primary-500 rounded-xl px-6 py-3'
+                    'rounded-xl bg-primary-400 px-6 py-3 active:bg-primary-500'
                   }
                   onPress={handlePickerConfirm}
                 >
