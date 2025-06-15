@@ -1,50 +1,57 @@
-# Welcome to your Expo app 👋
+# Cycle Tracker 📅
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+一个现代化的健康周期追踪应用，帮助用户记录和分析生理周期数据。基于Expo构建，支持跨平台使用（iOS/Android/Web）。
 
-## Get started
+## 技术栈
 
-1. Install dependencies
+- [Expo](https://expo.dev) - 跨平台开发框架
+- [React Native](https://reactnative.dev) - UI组件库
+- [TypeScript](https://www.typescriptlang.org) - 类型安全
+- [Tailwind CSS](https://tailwindcss.com) - 原子化CSS框架
+- [Nativewind](https://www.nativewind.dev) - React Native样式方案
+- [React Navigation](https://reactnavigation.org) - 导航系统
 
-   ```bash
-   pnpm install
-   ```
+## 核心特性
 
-2. Start the app
+✅ 交互式日历视图 | ✅ 健康数据可视化 | ✅ 多主题支持
 
-   ```bash
-   npx expo start
-   ```
+## 目录结构
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+├── app/              # 主应用程序目录
+│   ├── (tabs)/       # 底部标签页导航
+│   └── _layout.tsx   # 根布局组件
+├── components/       # 可复用UI组件
+├── lib/              # 工具函数和业务逻辑
+└── assets/           # 静态资源文件
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## 开始使用
 
-## Learn more
+1. 安装依赖
 
-To learn more about developing your project with Expo, look at the following resources:
+```bash
+pnpm install
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+2. 启动开发服务器
 
-## Join the community
+```bash
+npx expo start
+```
 
-Join our community of developers creating universal apps.
+## 功能演示
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+*交互式日历界面支持手势操作和数据可视化*
+
+## 贡献指南
+
+欢迎提交PR和Issue！请遵循以下规范：
+
+- 使用Prettier格式化代码
+- 添加类型注解
+- 保持组件单一职责
+
+## 许可证
+
+MIT License

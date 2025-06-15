@@ -1,7 +1,7 @@
 import { ScrollView, Text, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Calendar } from '@/components/Calendar';
-import { GradientBackground } from '@/components/GradientBackground';
+import { GradientBackground } from '@/components/shared/GradientBackground';
+import { Calendar } from '@/components/calendar';
 
 const Home = () => {
   return (

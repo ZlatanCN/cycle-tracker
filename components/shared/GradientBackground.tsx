@@ -1,6 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { memo, ReactNode, useMemo } from 'react';
-import { GRADIENTS } from '@/lib/gradient';
+import { GRADIENTS } from '@/constants/gradient';
 import { StyleProp, ViewStyle } from 'react-native';
 
 type GradientType = 'primary' | 'secondary' | 'neutral';
