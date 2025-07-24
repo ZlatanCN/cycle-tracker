@@ -10,19 +10,19 @@ const CalendarLegend = memo(({ className }: CalendarLegendProps) => {
   return (
     <View className={`flex-row flex-wrap justify-center ${className}`}>
       <View className={'flex-row items-center gap-1'}>
-        <View className={'bg-health-follicular h-3 w-3 rounded-full'} />
+        <View className={'h-3 w-3 rounded-full bg-health-follicular'} />
         <Text className={'text-xs text-gray-600'}>卵泡期</Text>
       </View>
       <View className={'flex-row items-center gap-1'}>
-        <View className={'bg-health-ovulation h-3 w-3 rounded-full'} />
+        <View className={'h-3 w-3 rounded-full bg-health-ovulation'} />
         <Text className={'text-xs text-gray-600'}>排卵期</Text>
       </View>
       <View className={'flex-row items-center gap-1'}>
-        <View className={'bg-health-luteal h-3 w-3 rounded-full'} />
+        <View className={'h-3 w-3 rounded-full bg-health-luteal'} />
         <Text className={'text-xs text-gray-600'}>黄体期</Text>
       </View>
       <View className={'flex-row items-center gap-1'}>
-        <View className={'bg-health-menstrual h-3 w-3 rounded-full'} />
+        <View className={'h-3 w-3 rounded-full bg-health-menstrual'} />
         <Text className={'text-xs text-gray-600'}>月经期</Text>
       </View>
       <View className={'flex-row items-center gap-1'}>
@@ -38,7 +38,11 @@ const CalendarLegend = memo(({ className }: CalendarLegendProps) => {
         <Text className={'text-xs text-gray-600'}>爱爱 (无措施)</Text>
       </View>
       <View className={'flex-row items-center gap-1'}>
-        <MaterialCommunityIcons name={'handshake'} size={16} color={'pink'} />
+        <MaterialCommunityIcons
+          name={'hand-front-left'}
+          size={16}
+          color={'pink'}
+        />
         <Text className={'text-xs text-gray-600'}>自爱</Text>
       </View>
       <View className={'flex-row items-center gap-1'}>
@@ -52,7 +56,7 @@ const CalendarLegend = memo(({ className }: CalendarLegendProps) => {
       <View className={'flex-row items-center gap-1'}>
         <View
           className={
-            'border-health-menstrual h-3 w-3 rounded-full border border-dashed'
+            'h-3 w-3 rounded-full border border-dashed border-health-menstrual'
           }
         />
         <Text className={'text-xs text-gray-600'}>月经期 (预测)</Text>

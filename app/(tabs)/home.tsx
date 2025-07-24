@@ -9,6 +9,17 @@ import { useState } from 'react';
 
 const Home = () => {
   const [period, setPeriod] = useState<GradientType>('menstrual');
+  const [selectedDate, setSelectedDate] = useState<string>('');
+
+  const handleDateSelect = (date: Date) => {
+    const dateString = date.toLocaleDateString('zh-CN');
+
+    if (dateString === selectedDate) {
+      setSelectedDate('');
+    } else {
+      setSelectedDate(dateString);
+    }
+  };
 
   return (
     <ScrollView className={'flex-1 bg-neutral-100 p-4'}>
@@ -21,7 +32,7 @@ const Home = () => {
         className={'mb-4 flex-1 p-5 shadow-sm'}
       >
         <View className={'flex flex-row items-center justify-start gap-2'}>
-          <Ionicons name={'water'} size={20} className={'text-white'} />
+          <Ionicons name={'water'} size={20} color={'white'} />
           <Text className={'text-lg font-semibold text-white'}>当前周期</Text>
         </View>
         <View className={'flex items-center justify-center py-2'}>
@@ -35,7 +46,7 @@ const Home = () => {
           </View>
           <View className={'rounded-full bg-white/20 px-4 py-2'}>
             <Text className={'text-sm text-white'}>
-              易孕期: 6月1日 - 6月6日
+              排卵期: 6月1日 - 6月6日
             </Text>
           </View>
         </View>
@@ -44,22 +55,21 @@ const Home = () => {
       {/* 健康日历卡片 - 使用更柔和的中性色调 */}
       <View className={'mb-4 rounded-xl bg-white p-5 shadow-sm'}>
         <View className={'mb-2 flex flex-row items-center justify-start gap-2'}>
-          <Ionicons
-            name={'calendar-number'}
-            size={20}
-            className={'text-neutral-600'}
-          />
+          <Ionicons name={'calendar-number'} size={20} color={'#9A8A7A'} />
           <Text className={'text-lg font-semibold text-neutral-700'}>
             健康日历
           </Text>
         </View>
-        <Calendar />
+        <Calendar
+          selectedDate={selectedDate}
+          handleDateSelect={handleDateSelect}
+        />
       </View>
 
       {/* 添加一个新的健康状态卡片 */}
-      <View className={'mb-4 rounded-xl bg-white p-5 shadow-sm'}>
+      <View className={'mb-8 rounded-xl bg-white p-5 shadow-sm'}>
         <View className={'flex flex-row items-center justify-start gap-2'}>
-          <Ionicons name={'pulse'} size={20} className={'text-secondary-500'} />
+          <Ionicons name={'pulse'} size={20} color={'#C19BC1'} />
           <Text className={'text-lg font-semibold text-secondary-700'}>
             今日状态
           </Text>

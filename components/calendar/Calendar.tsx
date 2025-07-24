@@ -1,14 +1,24 @@
 import { memo, useState } from 'react';
 import { View } from 'react-native';
-import { CalendarMonthSwitcher } from '@/components/calendar/CalendarMonthSwitcher';
-import { CalendarDayOfTheWeek } from '@/components/calendar/CalendarDayOfTheWeek';
+import {
+  CalendarMonthSwitcher
+} from '@/components/calendar/CalendarMonthSwitcher';
+import {
+  CalendarDayOfTheWeek
+} from '@/components/calendar/CalendarDayOfTheWeek';
 import { CalendarDateGrid } from '@/components/calendar/CalendarDateGrid';
 import { CalendarLegend } from '@/components/calendar/CalendarLegend';
-import { CalendarDatePickerModal } from '@/components/calendar/CalendarDatePickerModal';
+import {
+  CalendarDatePickerModal
+} from '@/components/calendar/CalendarDatePickerModal';
 
-const Calendar = memo(() => {
+type CalendarProps = {
+  selectedDate: string;
+  handleDateSelect: (date: Date) => void;
+};
+
+const Calendar = memo(({ handleDateSelect, selectedDate }: CalendarProps) => {
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
-  const [selectedDate, setSelectedDate] = useState<string>('');
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
   const [pickerYear, setPickerYear] = useState<number>(
     currentDate.getFullYear(),
@@ -16,16 +26,6 @@ const Calendar = memo(() => {
   const [pickerMonth, setPickerMonth] = useState<number>(
     currentDate.getMonth(),
   );
-
-  const handleDateSelect = (date: Date) => {
-    const dateString = date.toLocaleDateString('zh-CN');
-
-    if (dateString === selectedDate) {
-      setSelectedDate('');
-    } else {
-      setSelectedDate(dateString);
-    }
-  };
 
   const handleMonthChange = (increment: number) => {
     setCurrentDate(
