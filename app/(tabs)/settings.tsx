@@ -1,7 +1,7 @@
 import { ScrollView, Switch, Text, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useState } from 'react';
-import { colors } from '@/constants/colors';
+import { COLORS } from '@/constants/colors';
 
 const Settings = () => {
   const [notifications, setNotifications] = useState(true);
@@ -18,11 +18,11 @@ const Settings = () => {
               value={notifications}
               onValueChange={setNotifications}
               trackColor={{
-                false: colors.gray[300],
-                true: colors.primary[300],
+                false: COLORS.gray[300],
+                true: COLORS.primary[300],
               }}
               thumbColor={
-                notifications ? colors.primary.DEFAULT : colors.gray[50]
+                notifications ? COLORS.primary.DEFAULT : COLORS.gray[50]
               }
             />
           </View>
@@ -38,10 +38,10 @@ const Settings = () => {
               value={darkMode}
               onValueChange={setDarkMode}
               trackColor={{
-                false: colors.gray[300],
-                true: colors.primary[300],
+                false: COLORS.gray[300],
+                true: COLORS.primary[300],
               }}
-              thumbColor={darkMode ? colors.primary.DEFAULT : colors.gray[50]}
+              thumbColor={darkMode ? COLORS.primary.DEFAULT : COLORS.gray[50]}
             />
           </View>
           <View className={'my-2 border-t border-gray-200/50'} />
@@ -52,7 +52,7 @@ const Settings = () => {
               <Ionicons
                 name={'chevron-forward'}
                 size={20}
-                color={colors.gray[400]}
+                color={COLORS.gray[400]}
               />
             </View>
           </View>
@@ -72,7 +72,7 @@ const Settings = () => {
             <Ionicons
               name={'chevron-forward'}
               size={20}
-              color={colors.gray[400]}
+              color={COLORS.gray[400]}
             />
           </View>
         </View>

@@ -2,7 +2,7 @@ import { ScrollView, Text, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import {
   GradientBackground,
-  type GradientType
+  type GradientType,
 } from '@/components/shared/GradientBackground';
 import { Calendar } from '@/components/calendar';
 import { useState } from 'react';

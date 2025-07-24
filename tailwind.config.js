@@ -95,22 +95,25 @@ module.exports = {
 
         // 6. 特殊功能色 - 为健康应用定制
         health: {
-          // 月经周期相关
+          // 月经期相关
           menstrual: {
             light: '#FCE4EC', // 非常浅的粉红色
             DEFAULT: '#F48FB1', // 柔和的粉红色
             dark: '#E91E63', // 更深的粉红色
           },
+          // 卵泡期相关
           follicular: {
             light: '#E3F2FD', // 非常浅的蓝色
             DEFAULT: '#90CAF9', // 柔和的蓝色
             dark: '#2196F3', // 更深的天蓝色
           },
+          // 排卵期相关
           ovulation: {
             light: '#E8F5E9', // 非常浅的绿色
             DEFAULT: '#A5D6A7', // 柔和的绿色
             dark: '#4CAF50', // 更深的绿色
           },
+          // 黄体期相关
           luteal: {
             light: '#FFFDE7', // 非常浅的黄色
             DEFAULT: '#FFF59D', // 柔和的黄色

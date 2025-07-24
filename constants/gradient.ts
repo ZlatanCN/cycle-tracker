@@ -10,6 +10,6 @@ const GRADIENTS = {
   follicular: ['#E3F2FD', '#90CAF9'] as GradientColors, // 卵泡期
   ovulation: ['#E8F5E9', '#A5D6A7'] as GradientColors, // 排卵期
   luteal: ['#FFFDE7', '#FFF59D'] as GradientColors, // 黄体期
-};
+} as const;
 
 export { GRADIENTS };
