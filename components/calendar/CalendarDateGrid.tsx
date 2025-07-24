@@ -47,7 +47,7 @@ const CalendarDateGrid = memo(
         '2025/7/10',
       ]);
       // 排卵期
-      addData('ovulationPeriod', [
+      addData('ovulation', [
         '2025/7/11',
         '2025/7/12',
         '2025/7/13',
@@ -150,39 +150,39 @@ const CalendarDateGrid = memo(
             // 根据日期类型设置日期格以及文本的样式
             if (dateTypes.includes('menstrual')) {
               dateStyle += isToday
-                ? 'bg-health-cycle border-2 border-health-cycle/60 '
-                : 'bg-health-cycle/30 border border-health-cycle/40 ';
+                ? 'bg-health-menstrual border-2 border-health-menstrual-dark '
+                : 'bg-health-menstrual-light border border-health-menstrual ';
               textStyle += isToday
                 ? 'text-white font-bold '
-                : 'text-health-cycle font-medium ';
-            } else if (dateTypes.includes('ovulationPeriod')) {
+                : 'text-health-menstrual-dark font-medium ';
+            } else if (dateTypes.includes('ovulation')) {
               dateStyle += isToday
-                ? 'bg-green-400 border-2 border-green-300 '
-                : 'bg-green-100 border border-green-200 ';
+                ? 'bg-health-ovulation border-2 border-health-ovulation-dark '
+                : 'bg-health-ovulation-light border border-health-ovulation ';
               textStyle += isToday
                 ? 'text-white font-bold '
-                : 'text-green-700 font-medium ';
+                : 'text-health-ovulation-dark font-medium ';
             } else if (dateTypes.includes('follicular')) {
               dateStyle += isToday
-                ? 'bg-blue-400 border-2 border-blue-300 '
-                : 'bg-blue-100 border border-blue-200 ';
+                ? 'bg-health-follicular border-2 border-health-follicular-dark '
+                : 'bg-health-follicular-light border border-health-follicular ';
               textStyle += isToday
                 ? 'text-white font-bold '
-                : 'text-blue-700 font-medium ';
+                : 'text-health-follicular-dark font-medium ';
             } else if (dateTypes.includes('luteal')) {
               dateStyle += isToday
-                ? 'bg-yellow-400 border-2 border-yellow-300 '
-                : 'bg-yellow-100 border border-yellow-200 ';
+                ? 'bg-health-luteal border-2 border-health-luteal-dark '
+                : 'bg-health-luteal-light border border-health-luteal ';
               textStyle += isToday
                 ? 'text-white font-bold '
-                : 'text-yellow-700 font-medium ';
+                : 'text-health-luteal-dark font-medium ';
             } else if (dateTypes.includes('predictedMenstrual')) {
               dateStyle += isToday
-                ? 'bg-health-cycle border-2 border-dashed border-health-cycle/60 '
-                : 'border-2 border-dashed border-health-cycle/40 ';
+                ? 'bg-health-menstrual border-2 border-dashed border-health-menstrual-dark '
+                : 'border-2 border-dashed border-health-menstrual ';
               textStyle += isToday
                 ? 'text-white font-bold '
-                : 'text-health-cycle font-medium ';
+                : 'text-health-menstrual-dark font-medium ';
             } else {
               dateStyle += isToday
                 ? 'bg-primary-400 border-2 border-primary-300 '

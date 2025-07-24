@@ -9,7 +9,7 @@ const TabsLayout = () => {
   return (
     <Tabs>
       <Tabs.Screen
-        name="home"
+        name={"home"}
         options={{
           title: '主页',
           headerShown: false,
@@ -25,7 +25,7 @@ const TabsLayout = () => {
         }}
       />
       <Tabs.Screen
-        name="statistics"
+        name={"statistics"}
         options={{
           title: '统计',
           headerShown: false,
@@ -41,7 +41,7 @@ const TabsLayout = () => {
         }}
       />
       <Tabs.Screen
-        name="settings"
+        name={"settings"}
         options={{
           title: '设置',
           headerShown: false,

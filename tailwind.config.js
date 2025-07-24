@@ -96,20 +96,30 @@ module.exports = {
         // 6. 特殊功能色 - 为健康应用定制
         health: {
           // 月经周期相关
-          cycle: '#E879F9', // 柔和的粉紫色
-          fertile: '#A7F3D0', // 柔和的绿色
+          menstrual: {
+            light: '#FCE4EC', // 非常浅的粉红色
+            DEFAULT: '#F48FB1', // 柔和的粉红色
+            dark: '#E91E63', // 更深的粉红色
+          },
+          follicular: {
+            light: '#E3F2FD', // 非常浅的蓝色
+            DEFAULT: '#90CAF9', // 柔和的蓝色
+            dark: '#2196F3', // 更深的天蓝色
+          },
+          ovulation: {
+            light: '#E8F5E9', // 非常浅的绿色
+            DEFAULT: '#A5D6A7', // 柔和的绿色
+            dark: '#4CAF50', // 更深的绿色
+          },
+          luteal: {
+            light: '#FFFDE7', // 非常浅的黄色
+            DEFAULT: '#FFF59D', // 柔和的黄色
+            dark: '#FBC02D', // 更深的黄色
+          },
           // 情绪相关
           calm: '#BFDBFE', // 柔和的蓝色
           energy: '#FED7AA', // 柔和的橙色
         },
-      },
-
-      // 添加一些渐变色，让界面更有层次
-      backgroundImage: {
-        'gradient-primary': 'linear-gradient(135deg, #FAF9FD 0%, #F4F1FB 100%)',
-        'gradient-secondary':
-          'linear-gradient(135deg, #FDF9FD 0%, #F9F1F9 100%)',
-        'gradient-neutral': 'linear-gradient(135deg, #FEFCFA 0%, #F7F3EF 100%)',
       },
     },
   },

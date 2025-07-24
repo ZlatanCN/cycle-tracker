@@ -3,7 +3,14 @@ import { memo, ReactNode, useMemo } from 'react';
 import { GRADIENTS } from '@/constants/gradient';
 import { StyleProp, ViewStyle } from 'react-native';
 
-type GradientType = 'primary' | 'secondary' | 'neutral';
+type GradientType =
+  | 'primary'
+  | 'secondary'
+  | 'neutral'
+  | 'menstrual'
+  | 'follicular'
+  | 'ovulation'
+  | 'luteal';
 
 interface GradientBackgroundProps {
   type?: GradientType;
@@ -16,7 +23,7 @@ interface GradientBackgroundProps {
  * 渐变背景容器组件，用于包裹子元素并应用预定义的线性渐变效果
  *
  * @param props - 组件属性对象
- * @param props.type - 可选的渐变类型，可选值为 `primary` | `secondary` | `neutral`，默认为 `primary`
+ * @param props.type - 可选的渐变类型，可选值为 'primary', 'secondary', 'neutral', 'menstrual', 'follicular', 'ovulation', 'luteal'，默认为 'primary'
  * @param props.className - 可选的附加类名，用于自定义样式
  * @param props.children - 需要被渐变背景包裹的React子元素
  * @returns {LinearGradient} - 线性渐变背景容器组件
@@ -51,3 +58,4 @@ const GradientBackground = memo(
 GradientBackground.displayName = 'GradientBackground';
 
 export { GradientBackground };
+export type { GradientType };
