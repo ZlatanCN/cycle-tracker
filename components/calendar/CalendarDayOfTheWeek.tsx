@@ -1,5 +1,6 @@
-import { memo, useMemo } from 'react';
+import { memo } from 'react';
 import { Text, View } from 'react-native';
+import { DAYS_OF_THE_WEEK } from '@/constants/daysOfTheWeek';
 
 type CalenderDayOfTheWeekProps = {
   className?: string;
@@ -7,14 +8,9 @@ type CalenderDayOfTheWeekProps = {
 
 const CalendarDayOfTheWeek = memo(
   ({ className }: CalenderDayOfTheWeekProps) => {
-    const weekDays = useMemo<string[]>(
-      () => ['日', '一', '二', '三', '四', '五', '六'],
-      [],
-    );
-
     return (
       <View className={`flex-row justify-around ${className}`}>
-        {weekDays.map((day) => (
+        {DAYS_OF_THE_WEEK.map((day) => (
           <Text
             key={day}
             className={'text-center text-base font-medium text-gray-500'}

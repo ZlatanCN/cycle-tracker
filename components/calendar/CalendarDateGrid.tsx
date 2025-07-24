@@ -1,5 +1,6 @@
 import { memo, useMemo } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 type CalendarDateGridProps = {
   currentDate: Date;
@@ -20,21 +21,82 @@ const CalendarDateGrid = memo(
       [],
     );
 
-    const healthData = useMemo(
-      () => ({
-        menstrualDays: ['2024/6/1', '2024/6/2', '2024/6/3', '2024/6/4'], // 月经期
-        fertileDays: ['2024/6/12', '2024/6/13', '2024/6/14', '2024/6/15'], // 易孕期
-        ovulationDay: '2024/6/14', // 排卵日
-        recordedDays: ['2024/6/5', '2024/6/10', '2024/6/20'], // 有记录的日子
-      }),
-      [],
-    );
+    const healthData = useMemo(() => {
+      const dataMap = new Map<string, string[]>();
+
+      const addData = (type: string, dates: string[]) => {
+        dates.forEach((date) => {
+          if (!dataMap.has(date)) {
+            dataMap.set(date, []);
+          }
+          dataMap.get(date)?.push(type);
+        });
+      };
+
+      // 卵泡期
+      addData('follicular', [
+        '2025/7/1',
+        '2025/7/2',
+        '2025/7/3',
+        '2025/7/4',
+        '2025/7/5',
+        '2025/7/6',
+        '2025/7/7',
+        '2025/7/8',
+        '2025/7/9',
+        '2025/7/10',
+      ]);
+      // 排卵期
+      addData('ovulationPeriod', [
+        '2025/7/11',
+        '2025/7/12',
+        '2025/7/13',
+        '2025/7/14',
+      ]);
+      // 黄体期
+      addData('luteal', [
+        '2025/7/15',
+        '2025/7/16',
+        '2025/7/17',
+        '2025/7/18',
+        '2025/7/19',
+        '2025/7/20',
+        '2025/7/21',
+        '2025/7/22',
+        '2025/7/23',
+        '2025/7/24',
+        '2025/7/25',
+        '2025/7/26',
+        '2025/7/27',
+        '2025/7/28',
+      ]);
+      // 月经期
+      addData('menstrual', ['2025/7/29', '2025/7/30', '2025/7/31']);
+      // 排卵日
+      addData('ovulation', ['2025/7/14']);
+      // 预测的月经期
+      addData('predictedMenstrual', [
+        '2025/8/1',
+        '2025/8/2',
+        '2025/8/3',
+        '2025/8/4',
+      ]);
+      // 性生活 (有措施)
+      addData('sexWithProtection', ['2025/7/12', '2025/7/20']);
+      // 性生活 (无措施)
+      addData('sexWithoutProtection', ['2025/7/14']);
+      // 自慰
+      addData('masturbation', ['2025/7/8', '2025/7/18']);
+
+      return dataMap;
+    }, []);
 
     const generateMonth = (date: Date) => {
       const year = date.getFullYear();
       const month = date.getMonth();
 
       const firstDayOfMonth = new Date(year, month, 1);
+
       const lastDayOfMonth = new Date(year, month + 1, 0);
 
       const daysInMonth = lastDayOfMonth.getDate();
@@ -63,14 +125,9 @@ const CalendarDateGrid = memo(
       return [...prevMonthDays, ...currentMonthDays, ...nextMonthDays];
     };
 
-    const getDateType = (date: Date) => {
+    const getDateTypes = (date: Date): string[] => {
       const dateString = date.toLocaleDateString('zh-CN');
-
-      if (healthData.ovulationDay === dateString) return 'ovulation';
-      if (healthData.menstrualDays.includes(dateString)) return 'menstrual';
-      if (healthData.fertileDays.includes(dateString)) return 'fertile';
-      if (healthData.recordedDays.includes(dateString)) return 'recorded';
-      return 'normal';
+      return healthData.get(dateString) || [];
     };
 
     return (
@@ -79,7 +136,7 @@ const CalendarDateGrid = memo(
           const isCurrentMonth = date.getMonth() === currentDate.getMonth();
           const isToday = date.toLocaleDateString('zh-CN') === today;
           const isSelected = date.toLocaleDateString('zh-CN') === selectedDate;
-          const dateType = getDateType(date);
+          const dateTypes = getDateTypes(date);
 
           // 根据日期类型设置样式
           let dateStyle =
@@ -90,55 +147,47 @@ const CalendarDateGrid = memo(
             dateStyle += 'border-0 ';
             textStyle += 'text-gray-300 ';
           } else {
-            switch (dateType) {
-              case 'menstrual':
-                dateStyle += isSelected
-                  ? 'bg-health-cycle border-2 border-health-cycle/60 '
-                  : 'bg-health-cycle/30 border border-health-cycle/40 ';
-                textStyle += isSelected
-                  ? 'text-white font-bold '
-                  : 'text-health-cycle font-medium ';
-                break;
-              case 'ovulation':
-                dateStyle += isSelected
-                  ? 'bg-primary-500 border-2 border-primary-400 '
-                  : 'bg-primary-200 border-2 border-primary-300 ';
-                textStyle += isSelected
-                  ? 'text-white font-bold '
-                  : 'text-primary-700 font-semibold ';
-                break;
-              case 'fertile':
-                dateStyle += isSelected
-                  ? 'bg-health-fertile border-2 border-health-fertile/60 '
-                  : 'bg-health-fertile/40 border border-health-fertile/50 ';
-                textStyle += isSelected
-                  ? 'text-white font-bold '
-                  : 'text-green-700 font-medium ';
-                break;
-              case 'recorded':
-                dateStyle += isSelected
-                  ? 'bg-secondary-400 border-2 border-secondary-300 '
-                  : 'bg-secondary-100 border border-secondary-200 ';
-                textStyle += isSelected
-                  ? 'text-white font-bold '
-                  : 'text-secondary-700 font-medium ';
-                break;
-              default:
-                if (isToday) {
-                  dateStyle += isSelected
-                    ? 'bg-primary-400 border-2 border-primary-300 '
-                    : 'bg-primary-100 border-2 border-primary-200 ';
-                  textStyle += isSelected
-                    ? 'text-white font-bold '
-                    : 'text-primary-700 font-semibold ';
-                } else {
-                  dateStyle += isSelected
-                    ? 'bg-primary-400 border-2 border-primary-300 '
-                    : 'border border-neutral-200 ';
-                  textStyle += isSelected
-                    ? 'text-white font-bold '
-                    : 'text-gray-600 ';
-                }
+            // 根据日期类型设置日期格以及文本的样式
+            if (dateTypes.includes('menstrual')) {
+              dateStyle += isToday
+                ? 'bg-health-cycle border-2 border-health-cycle/60 '
+                : 'bg-health-cycle/30 border border-health-cycle/40 ';
+              textStyle += isToday
+                ? 'text-white font-bold '
+                : 'text-health-cycle font-medium ';
+            } else if (dateTypes.includes('ovulationPeriod')) {
+              dateStyle += isToday
+                ? 'bg-green-400 border-2 border-green-300 '
+                : 'bg-green-100 border border-green-200 ';
+              textStyle += isToday
+                ? 'text-white font-bold '
+                : 'text-green-700 font-medium ';
+            } else if (dateTypes.includes('follicular')) {
+              dateStyle += isToday
+                ? 'bg-blue-400 border-2 border-blue-300 '
+                : 'bg-blue-100 border border-blue-200 ';
+              textStyle += isToday
+                ? 'text-white font-bold '
+                : 'text-blue-700 font-medium ';
+            } else if (dateTypes.includes('luteal')) {
+              dateStyle += isToday
+                ? 'bg-yellow-400 border-2 border-yellow-300 '
+                : 'bg-yellow-100 border border-yellow-200 ';
+              textStyle += isToday
+                ? 'text-white font-bold '
+                : 'text-yellow-700 font-medium ';
+            } else if (dateTypes.includes('predictedMenstrual')) {
+              dateStyle += isToday
+                ? 'bg-health-cycle border-2 border-dashed border-health-cycle/60 '
+                : 'border-2 border-dashed border-health-cycle/40 ';
+              textStyle += isToday
+                ? 'text-white font-bold '
+                : 'text-health-cycle font-medium ';
+            } else {
+              dateStyle += isToday
+                ? 'bg-primary-400 border-2 border-primary-300 '
+                : 'border border-neutral-200 ';
+              textStyle += isToday ? 'text-white font-bold ' : 'text-gray-600 ';
             }
           }
 
@@ -150,6 +199,36 @@ const CalendarDateGrid = memo(
               disabled={!isCurrentMonth}
             >
               <Text className={textStyle}>{date.getDate()}</Text>
+              <View className={'absolute bottom-0.5 flex-row'}>
+                {dateTypes.includes('sexWithProtection') && (
+                  <MaterialCommunityIcons
+                    name={'heart-outline'}
+                    size={8}
+                    color={'purple'}
+                  />
+                )}
+                {dateTypes.includes('sexWithoutProtection') && (
+                  <MaterialCommunityIcons
+                    name={'heart'}
+                    size={8}
+                    color={'purple'}
+                  />
+                )}
+                {dateTypes.includes('masturbation') && (
+                  <MaterialCommunityIcons
+                    name={'handshake'}
+                    size={8}
+                    color={'pink'}
+                  />
+                )}
+                {dateTypes.includes('ovulation') && (
+                  <MaterialCommunityIcons
+                    name={'human-pregnant'}
+                    size={8}
+                    color={'red'}
+                  />
+                )}
+              </View>
             </TouchableOpacity>
           );
         })}

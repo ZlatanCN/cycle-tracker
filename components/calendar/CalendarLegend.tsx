@@ -1,5 +1,6 @@
 import { memo } from 'react';
 import { Text, View } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 type CalendarLegendProps = {
   className?: string;
@@ -9,20 +10,52 @@ const CalendarLegend = memo(({ className }: CalendarLegendProps) => {
   return (
     <View className={`flex-row flex-wrap justify-center ${className}`}>
       <View className={'flex-row items-center gap-1'}>
+        <View className={'h-3 w-3 rounded-full bg-blue-200'} />
+        <Text className={'text-xs text-gray-600'}>卵泡期</Text>
+      </View>
+      <View className={'flex-row items-center gap-1'}>
+        <View className={'h-3 w-3 rounded-full bg-green-200'} />
+        <Text className={'text-xs text-gray-600'}>排卵期</Text>
+      </View>
+      <View className={'flex-row items-center gap-1'}>
+        <View className={'h-3 w-3 rounded-full bg-yellow-200'} />
+        <Text className={'text-xs text-gray-600'}>黄体期</Text>
+      </View>
+      <View className={'flex-row items-center gap-1'}>
         <View className={'h-3 w-3 rounded-full bg-health-cycle/60'} />
         <Text className={'text-xs text-gray-600'}>月经期</Text>
       </View>
       <View className={'flex-row items-center gap-1'}>
-        <View className={'h-3 w-3 rounded-full bg-health-fertile/60'} />
-        <Text className={'text-xs text-gray-600'}>易孕期</Text>
+        <MaterialCommunityIcons
+          name={'heart-outline'}
+          size={16}
+          color={'purple'}
+        />
+        <Text className={'text-xs text-gray-600'}>爱爱 (有措施)</Text>
       </View>
       <View className={'flex-row items-center gap-1'}>
-        <View className={'h-3 w-3 rounded-full bg-primary-300'} />
+        <MaterialCommunityIcons name={'heart'} size={16} color={'purple'} />
+        <Text className={'text-xs text-gray-600'}>爱爱 (无措施)</Text>
+      </View>
+      <View className={'flex-row items-center gap-1'}>
+        <MaterialCommunityIcons name={'handshake'} size={16} color={'pink'} />
+        <Text className={'text-xs text-gray-600'}>自爱</Text>
+      </View>
+      <View className={'flex-row items-center gap-1'}>
+        <MaterialCommunityIcons
+          name={'human-pregnant'}
+          size={16}
+          color={'red'}
+        />
         <Text className={'text-xs text-gray-600'}>排卵日</Text>
       </View>
       <View className={'flex-row items-center gap-1'}>
-        <View className={'h-3 w-3 rounded-full bg-secondary-200'} />
-        <Text className={'text-xs text-gray-600'}>有记录</Text>
+        <View
+          className={
+            'h-3 w-3 rounded-full border border-dashed border-health-cycle'
+          }
+        />
+        <Text className={'text-xs text-gray-600'}>月经期 (预测)</Text>
       </View>
     </View>
   );
