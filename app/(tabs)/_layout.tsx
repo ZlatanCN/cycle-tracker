@@ -1,15 +1,27 @@
 import { Tabs } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { useBottomSheet } from '@/contexts/BottomSheetContext';
 
 const TabsLayout = () => {
+  const { isVisible } = useBottomSheet();
   const activeColor = '#A998F0';
   const inactiveColor = '#6B7280';
   const iconSize = 20;
 
   return (
-    <Tabs>
+    <Tabs
+      screenOptions={{
+        tabBarStyle: isVisible
+          ? { display: 'none' }
+          : {
+              paddingBottom: 8,
+              paddingTop: 8,
+              height: 60,
+            },
+      }}
+    >
       <Tabs.Screen
-        name={"home"}
+        name={'home'}
         options={{
           title: '主页',
           headerShown: false,
@@ -25,7 +37,7 @@ const TabsLayout = () => {
         }}
       />
       <Tabs.Screen
-        name={"statistics"}
+        name={'statistics'}
         options={{
           title: '统计',
           headerShown: false,
@@ -41,7 +53,7 @@ const TabsLayout = () => {
         }}
       />
       <Tabs.Screen
-        name={"settings"}
+        name={'settings'}
         options={{
           title: '设置',
           headerShown: false,
